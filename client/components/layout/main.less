@@ -107,6 +107,18 @@
       }
     }
 
+    .siderMenu {
+      position: absolute;
+      width: 100%;
+      max-height: ~"calc(100% - 88px)";
+      overflow-y: scroll;
+      overflow-x: hidden;
+
+      &::-webkit-scrollbar-thumb {
+        display: none;
+      }
+    }
+
     .switchtheme {
       width: 100%;
       position: absolute;
@@ -118,6 +130,7 @@
       align-items: center;
       padding: 0 16px 0 24px;
       overflow: hidden;
+      z-index: 1000;
 
       span {
         white-space: nowrap;

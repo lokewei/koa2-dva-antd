@@ -21,7 +21,7 @@ export default {
   },
 
   subscriptions: {
-    setup({ dispatch, history }) {
+    setup ({ dispatch, history }) {
       history.listen(location => {
         if (location.pathname === '/users') {
           dispatch({
@@ -34,7 +34,7 @@ export default {
   },
 
   effects: {
-    *query({ payload }, { call, put }) {
+    *query ({ payload }, { call, put }) {
       yield put({ type: 'showLoading' })
       const data = yield call(query, parse(payload))
       if (data) {
@@ -42,15 +42,12 @@ export default {
           type: 'querySuccess',
           payload: {
             list: data.data,
-            pagination: {
-              total: data.page.total,
-              current: data.page.current
-            }
+            pagination: data.page
           }
         })
       }
     },
-    *'delete'({ payload }, { call, put }) {
+    *'delete' ({ payload }, { call, put }) {
       yield put({ type: 'showLoading' })
       const data = yield call(remove, { id: payload })
       if (data && data.success) {
@@ -66,7 +63,7 @@ export default {
         })
       }
     },
-    *create({ payload }, { call, put }) {
+    *create ({ payload }, { call, put }) {
       yield put({ type: 'hideModal' })
       yield put({ type: 'showLoading' })
       const data = yield call(create, payload)

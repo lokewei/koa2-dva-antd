@@ -1,4 +1,5 @@
 const webpack = require('atool-build/lib/webpack')
+const path = require('path')
 
 module.exports = function (webpackConfig, env) {
   webpackConfig.babel.plugins.push('transform-runtime')
@@ -44,6 +45,12 @@ module.exports = function (webpackConfig, env) {
       loader.test = /\.css$/
     }
   })
+
+  console.dir(webpackConfig.resolve);
+  webpackConfig.resolve.root = [
+    path.resolve('./client'),
+    path.resolve('./mock')
+  ];
 
   return webpackConfig
 }
