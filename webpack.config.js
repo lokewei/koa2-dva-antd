@@ -46,7 +46,6 @@ module.exports = function (webpackConfig, env) {
     }
   })
 
-  console.dir(webpackConfig.resolve);
   webpackConfig.resolve.root = [
     path.resolve('./client'),
     path.resolve('./mock')
