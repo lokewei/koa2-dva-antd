@@ -71,16 +71,17 @@
     "eslint-plugin-jsx-a11y": "^1.4.2",
     "eslint-plugin-react": "^5.1.1",
     "glob": "^7.0.5",
-    "mockjs": "^1.0.1-beta3",
-    "redbox-react": "^1.2.10",
-    "robe-ajax": "^1.0.0",
-    "watchjs": "^0.0.0",
+    "koa-proxy": "^0.7.0",
     "mocha": "^3.0.2",
     "mochawesome": "^1.5.1",
+    "mockjs": "^1.0.1-beta3",
     "nodemon": "^1.10.0",
+    "redbox-react": "^1.2.10",
+    "robe-ajax": "^1.0.0",
     "serve-favicon": "^2.3.0",
     "should": "^11.1.0",
-    "supertest": "^2.0.0"
+    "supertest": "^2.0.0",
+    "watchjs": "^0.0.0"
   },
   "theme": "./client/theme.js",
   "standard": {

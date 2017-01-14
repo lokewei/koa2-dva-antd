@@ -5,6 +5,7 @@ import Router from 'koa-router';
 
 
 import RouterMain from './main';
+import RouterApi from './api'
 import RouterAuth from './auth';
 import RouterOpen from './open';
 import RouterMock from './mock';
@@ -20,7 +21,7 @@ router.get('/', async (ctx, next) => {
 })
 
 
-router.use('/api',  RouterMain.routes(), RouterMain.allowedMethods())
+router.use('/api', RouterApi.routes(), RouterApi.allowedMethods())
 router.use('/auth', RouterAuth.routes(), RouterAuth.allowedMethods())
 router.use('/open', RouterOpen.routes(), RouterOpen.allowedMethods())
 router.use('/mock', RouterMock.routes(), RouterMock.allowedMethods())

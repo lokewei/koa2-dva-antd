@@ -9,6 +9,7 @@ import mount from 'koa-mount';
 import bodyParser from 'koa-bodyparser';
 import session from 'koa-generic-session';
 import views from 'koa-views';
+import proxy from 'koa-proxy';
 
 import _ from './passport';
 import passport from 'koa-passport';
@@ -29,6 +30,12 @@ export default function middleware(app) {
 
     app.use(cors({ credentials: true }));
     app.use(convert(Logger()))
+    if (process.env.NODE_ENV === 'development') {
+      app.use(convert(proxy({
+        host: 'http://localhost:8000',
+        match: /.+\.(js|css)/
+      })));
+    }
     app.use(bodyParser())
     app.use(mount("/", convert(Serve(__dirname + '/../public/'))));
 
@@ -37,7 +44,7 @@ export default function middleware(app) {
 
     app.use(passport.initialize())
     app.use(passport.session())
-    
+
     app.use(views(__dirname + '/../views', {extension: 'swig'}))
 
 }

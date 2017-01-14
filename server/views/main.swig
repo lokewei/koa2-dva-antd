@@ -19,7 +19,7 @@
     {% if process.env.NODE_ENV !== "development" %}
     <script src="dist/index.js"></script>
     {% else %}
-    <script src="http://localhost:9000/index.js"></script>
+    <script src="index.js"></script>
     {% endif %}
   </body>
 </html>

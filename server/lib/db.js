@@ -4,13 +4,13 @@ import mysql from 'mysql';
 
 const db = {}
 
-const mysqlPool  = mysql.createPool({
+const mysqlPool = mysql.createPool({
   connectionLimit : 10,
   host            : 'localhost',
   port            : 3306,
-  user            : 'test',
-  password        : 'test',
-  database        : 'test'
+  user            : 'sa',
+  password        : '111111',
+  database        : 'tailv'
 });
 
 db.pool = mysqlPool;

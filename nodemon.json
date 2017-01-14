@@ -1,0 +1,3 @@
+{
+  "ignore": ["proxy.config.js", "README", "webpack.config.js"]
+}
