@@ -6,7 +6,8 @@
   "scripts": {
     "client": "dora --plugins \"proxy,webpack,webpack-hmr\"",
     "server": "nodemon start.js",
-    "dev": "dora -p 9000 --plugins \"webpack,webpack-hmr\" | nodemon start.js",
+    "start": "atool-build | nodemon start.js",
+    "dev": "dora --plugins \"webpack,webpack-hmr\" | nodemon start.js",
     "build": "atool-build",
     "test": "mocha --compilers js:babel-core/register --require babel-polyfill",
     "report": "mocha --compilers js:babel-core/register --require babel-polyfill --reporter mochawesome"

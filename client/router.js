@@ -1,23 +1,23 @@
 import React from 'react'
-import {Router} from 'dva/router'
+import { Router } from 'dva/router'
 import App from './routes/app'
 
-export default function ({history, app}) {
+export default function ({ history, app }) {
   const routes = [
     {
       path: '/',
       component: App,
-      getIndexRoute (nextState, cb) {
+      getIndexRoute(nextState, cb) {
         require.ensure([], require => {
           app.model(require('./models/dashboard'))
-          cb(null, {component: require('./routes/dashboard')})
+          cb(null, { component: require('./routes/dashboard') })
         })
       },
       childRoutes: [
         {
           path: 'dashboard',
           name: 'dashboard',
-          getComponent (nextState, cb) {
+          getComponent(nextState, cb) {
             require.ensure([], require => {
               app.model(require('./models/dashboard'))
               cb(null, require('./routes/dashboard'))
@@ -26,7 +26,7 @@ export default function ({history, app}) {
         }, {
           path: 'users',
           name: 'users',
-          getComponent (nextState, cb) {
+          getComponent(nextState, cb) {
             require.ensure([], require => {
               app.model(require('./models/users'))
               cb(null, require('./routes/users'))
@@ -35,7 +35,7 @@ export default function ({history, app}) {
         }, {
           path: 'ui/ico',
           name: 'ui/ico',
-          getComponent (nextState, cb) {
+          getComponent(nextState, cb) {
             require.ensure([], require => {
               cb(null, require('./routes/ui/ico'))
             })
@@ -43,7 +43,7 @@ export default function ({history, app}) {
         }, {
           path: 'ui/search',
           name: 'ui/search',
-          getComponent (nextState, cb) {
+          getComponent(nextState, cb) {
             require.ensure([], require => {
               cb(null, require('./routes/ui/search'))
             })
@@ -51,7 +51,7 @@ export default function ({history, app}) {
         }, {
           path: '*',
           name: 'error',
-          getComponent (nextState, cb) {
+          getComponent(nextState, cb) {
             require.ensure([], require => {
               cb(null, require('./routes/error'))
             })

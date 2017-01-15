@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Ant Design Admin</title>
+    <title>旅游目的地</title>
+    {% if process.env.NODE_ENV !== "development" %}
+    <link rel="stylesheet" href="client/index.css" />
+    {% else %}
     <link rel="stylesheet" href="index.css" />
-    <link rel="icon" href="https://t.alipayobjects.com/images/T1QUBfXo4fXXXXXXXX.png" type="image/x-icon">
+    {% endif %}
+    <link rel="icon" href="assets/images/ico.png" type="image/x-icon">
     <!--[if lte IE 10]>
         <script
-          src="https://as.alipayobjects.com/g/component/??console-polyfill/0.2.2/index.js,media-match/2.0.2/media.match.min.js"></script>
+          src="assets/js/ie-polyfill.js"></script>
     <![endif]-->
   </head>
 
@@ -17,7 +21,7 @@
     <div id="root"></div>
 
     {% if process.env.NODE_ENV !== "development" %}
-    <script src="dist/index.js"></script>
+    <script src="client/index.js"></script>
     {% else %}
     <script src="index.js"></script>
     {% endif %}

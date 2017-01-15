@@ -11,7 +11,7 @@ import session from 'koa-generic-session';
 import views from 'koa-views';
 import proxy from 'koa-proxy';
 
-import _ from './passport';
+import './passport';
 import passport from 'koa-passport';
 
 import log4js from 'log4js';
@@ -39,7 +39,7 @@ export default function middleware(app) {
     app.use(bodyParser())
     app.use(mount("/", convert(Serve(__dirname + '/../public/'))));
 
-    app.keys = ['superalsrk-session-key'];
+    app.keys = ['tailv-session-key'];
     app.use(convert(session()))
 
     app.use(passport.initialize())

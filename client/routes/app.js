@@ -10,13 +10,22 @@ import { Spin } from 'antd'
 import { classnames } from '../utils'
 import '../components/layout/common.less'
 
-function App ({children, location, dispatch, app}) {
-  const {login, loading, loginButtonLoading, user, siderFold, darkTheme, isNavbar, menuPopoverVisible} = app
+function App({ children, location, dispatch, app }) {
+  const {
+    login,
+    loading,
+    loginButtonLoading,
+    user,
+    siderFold,
+    darkTheme,
+    isNavbar,
+    menuPopoverVisible
+  } = app;
   const loginProps = {
     loading,
     loginButtonLoading,
-    onOk (data) {
-      dispatch({type: 'app/login', payload: data})
+    onOk(data) {
+      dispatch({ type: 'app/login', payload: data })
     }
   }
 
@@ -26,14 +35,14 @@ function App ({children, location, dispatch, app}) {
     location,
     isNavbar,
     menuPopoverVisible,
-    switchMenuPopover () {
-      dispatch({type: 'app/switchMenuPopver'})
+    switchMenuPopover() {
+      dispatch({ type: 'app/switchMenuPopver' })
     },
-    logout () {
-      dispatch({type: 'app/logout'})
+    logout() {
+      dispatch({ type: 'app/logout' })
     },
-    switchSider () {
-      dispatch({type: 'app/switchSider'})
+    switchSider() {
+      dispatch({ type: 'app/switchSider' })
     }
   }
 
@@ -41,29 +50,41 @@ function App ({children, location, dispatch, app}) {
     siderFold,
     darkTheme,
     location,
-    changeTheme () {
-      dispatch({type: 'app/changeTheme'})
+    changeTheme() {
+      dispatch({ type: 'app/changeTheme' })
     }
   }
 
   return (
     <div>{login
-        ? <div className={classnames(styles.layout, {[styles.fold]: isNavbar ? false : siderFold}, {[styles.withnavbar]: isNavbar})}>
-          {!isNavbar ? <aside className={classnames(styles.sider, {[styles.light]: !darkTheme})}>
-            <Sider {...siderProps} />
-          </aside> : ''}
-          <div className={styles.main}>
-            <Header {...headerProps} />
-            <Bread location={location} />
-            <div className={styles.container}>
-              <div className={styles.content}>
-                {children}
-              </div>
+        ?
+      <div
+        className={
+          classnames(
+          styles.layout,
+          { [styles.fold]: isNavbar ? false : siderFold },
+          { [styles.withnavbar]: isNavbar })
+        }
+      >
+        {!isNavbar ? <aside className={classnames(styles.sider, { [styles.light]: !darkTheme })}>
+          <Sider {...siderProps} />
+        </aside> : ''}
+        <div className={styles.main}>
+          <Header {...headerProps} />
+          <Bread location={location} />
+          <div className={styles.container}>
+            <div className={styles.content}>
+              {children}
             </div>
-            <Footer />
           </div>
+          <Footer />
         </div>
-        : <div className={styles.spin}><Spin tip='加载用户信息...' spinning={loading} size='large'><Login {...loginProps} /></Spin></div>}</div>
+      </div>
+        :
+      <div className={styles.spin}>
+        <Spin tip="加载用户信息..." spinning={loading} size="large"><Login {...loginProps} /></Spin>
+      </div>
+    }</div>
   )
 }
 
@@ -79,4 +100,4 @@ App.propTypes = {
   darkTheme: PropTypes.bool
 }
 
-export default connect(({app}) => ({app}))(App)
+export default connect(({ app }) => ({ app }))(App)

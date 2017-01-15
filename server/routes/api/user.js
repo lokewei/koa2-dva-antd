@@ -9,6 +9,18 @@ router.get('/list', async (ctx, next) => {
     status: 'list users',
     data: userList
   }
-})
+});
+
+router.get('/findById', async (ctx, next) => {
+  const { id } = ctx.query;
+  const user = await UserModel.findById(id);
+  ctx.body = {
+    status: 'list users',
+    data: {
+      id,
+      user
+    }
+  }
+});
 
 export default router;

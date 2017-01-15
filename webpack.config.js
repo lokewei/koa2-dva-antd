@@ -46,10 +46,14 @@ module.exports = function (webpackConfig, env) {
     }
   })
 
+  // add resolve root fold
   webpackConfig.resolve.root = [
     path.resolve('./client'),
     path.resolve('./mock')
   ];
+
+  // change output path to backend server
+  webpackConfig.output.path = path.join(__dirname, 'src/public/client');
 
   return webpackConfig
 }

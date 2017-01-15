@@ -1,28 +1,32 @@
-'use strict';
-
 import passport from 'koa-passport';
-import AccountModel from '../models/account';
+// import AccountModel from '../models/account';
+import UserModel from '../models/user'
 
-passport.serializeUser(function(user, done) {
-    done(null, user.id)
+passport.serializeUser((user, done) => {
+  console.log(2);
+  done(null, user.id)
 })
 
-passport.deserializeUser(function(id, done) {
-    AccountModel.findOne(id, function(err, user) {
-        done(err, user)
-    })
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await UserModel.findById(id);
+    console.log(1)
+    done(null, user)
+  } catch (err) {
+    done(err, null);
+  }
 })
 
-var LocalStrategy = require('passport-local').Strategy
+const LocalStrategy = require('passport-local').Strategy
 
-passport.use(new LocalStrategy(function(username, password, done) {
-  
-  AccountModel.verify(username, password)
-    .then(function(result) {
-        if(result != null) {
-            done(null, result)
-        }  else {
-            done(null, false)
-        }
+passport.use(new LocalStrategy((username, password, done) => {
+  console.log(`username: ${username}`);
+  UserModel.verify(username, password)
+    .then((result) => {
+      if (result != null) {
+        done(null, result)
+      } else {
+        done(null, false)
+      }
     })
 }))

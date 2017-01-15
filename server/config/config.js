@@ -12,34 +12,34 @@ let base = {
 };
 
 let specific = {
-    development: {
-        app: {
-            port: 5000,
-            name: "koa2-boilerplate - Dev",
-            excluded : "excluded_path"
-        },
-        mysql: {
-            host: 'localhost',
-            port : 3306,
-            user : 'test',
-            password : 'test',
-            database : 'test'
-        }
-    }, 
-    production: {
-        app: {
-            port: process.env.PORT || 5000,
-            name: "koa2-boilerplate",
-            excluded : "excluded_path"
-        },
-        mysql: {
-            host: 'localhost',
-            port : 3306,
-            user : 'test',
-            password : 'test',
-            database : 'test'
-        }
+  development: {
+    app: {
+      port: 5000,
+      name: 'tailv - Dev',
+      excluded: 'excluded_path'
     },
+    mysql: {
+      host: 'localhost',
+      port: 3306,
+      user: 'sa',
+      password: '111111',
+      database: 'tailv'
+    }
+  },
+  production: {
+    app: {
+      port: process.env.PORT || 5000,
+      name: 'tailv',
+      excluded: 'excluded_path'
+    },
+    mysql: {
+      host: 'localhost',
+      port: 3306,
+      user: 'test',
+      password: 'test',
+      database: 'test'
+    }
+  }
 };
 
 module.exports = _.merge(base, specific[env]);

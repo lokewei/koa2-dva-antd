@@ -1,4 +1,4 @@
-import './index.html'
+// import './index.html'
 import dva from 'dva'
 
 // 1. Initialize
