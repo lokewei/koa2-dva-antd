@@ -3,14 +3,12 @@ import passport from 'koa-passport';
 import UserModel from '../models/user'
 
 passport.serializeUser((user, done) => {
-  console.log(2);
   done(null, user.id)
 })
 
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await UserModel.findById(id);
-    console.log(1)
     done(null, user)
   } catch (err) {
     done(err, null);
