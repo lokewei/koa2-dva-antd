@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import { Button, Row, Form, Input } from 'antd'
 import { config } from '../utils'
 import styles from './login.less'
+import Message from '../components/message'
 
 const FormItem = Form.Item
 
@@ -11,6 +12,10 @@ const login = ({
   form: {
     getFieldDecorator,
     validateFieldsAndScroll
+  },
+  submitResult: {
+    type,
+    message
   }
 }) => {
   function handleOk() {
@@ -24,6 +29,7 @@ const login = ({
 
   return (
     <div className={styles.form}>
+      <Message type={type} message={message} />
       <div className={styles.logo}>
         <img src={config.logoSrc} alt="logo" />
         <span>泰旅目的地后台</span>
@@ -66,7 +72,8 @@ const login = ({
 login.propTypes = {
   form: PropTypes.object,
   loginButtonLoading: PropTypes.bool,
-  onOk: PropTypes.func
+  onOk: PropTypes.func,
+  submitResult: PropTypes.object
 }
 
 export default Form.create()(login)

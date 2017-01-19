@@ -6,6 +6,10 @@ export default {
   state: {
     login: false,
     loading: false,
+    submitResult: {
+      type: 'info',
+      message: ''
+    },
     user: {
       name: '吴彦祖'
     },
@@ -38,7 +42,10 @@ export default {
         });
       } else {
         yield put({
-          type: 'loginFail'
+          type: 'loginFail',
+          payload: {
+            ...data
+          }
         })
       }
     },
@@ -106,9 +113,13 @@ export default {
         login: false
       }
     },
-    loginFail(state) {
+    loginFail(state, action) {
       return {
         ...state,
+        submitResult: {
+          message: action.payload.message,
+          type: 'error'
+        },
         login: false,
         loginButtonLoading: false
       }

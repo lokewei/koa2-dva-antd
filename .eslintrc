@@ -25,7 +25,9 @@
     "require-yield": [1],
     "semi": [0],
     "comma-dangle": ["error", "never"],
-    "no-param-reassign": ["error", { "props": false }]
+    "no-param-reassign": ["error", { "props": false }],
+    "no-unused-vars": ["error", { "vars": "local", "args": "after-used" }],
+    "no-multiple-empty-lines": [0]
   },
   "parserOptions": {
     "ecmaFeatures": {

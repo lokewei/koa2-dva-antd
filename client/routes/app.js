@@ -14,6 +14,7 @@ function App({ children, location, dispatch, app }) {
   const {
     login,
     loading,
+    submitResult,
     loginButtonLoading,
     user,
     siderFold,
@@ -24,6 +25,7 @@ function App({ children, location, dispatch, app }) {
   const loginProps = {
     loading,
     loginButtonLoading,
+    submitResult,
     onOk(data) {
       dispatch({ type: 'app/login', payload: data })
     }
@@ -95,6 +97,7 @@ App.propTypes = {
   loading: PropTypes.object,
   loginButtonLoading: PropTypes.bool,
   login: PropTypes.bool,
+  submitResult: PropTypes.object,
   user: PropTypes.object,
   siderFold: PropTypes.bool,
   darkTheme: PropTypes.bool

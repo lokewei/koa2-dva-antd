@@ -20,7 +20,7 @@
     "antd": "^2.6.0",
     "bcryptjs": "^2.3.0",
     "classnames": "^2.2.5",
-    "dva": "^1.1.0",
+    "dva": "^1.2.0",
     "dva-loading": "^0.2.0",
     "excel-export": "^0.5.1",
     "fivebeans": "^1.4.1",

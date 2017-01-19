@@ -8,6 +8,8 @@ router.post('/login', async (ctx, next) => {
   const middleware = passport.authenticate('local', async(user) => {
     if (user === false) {
       ctx.body = {
+        success: false,
+        message: '用户不存在',
         status: 400
       }
     } else {
