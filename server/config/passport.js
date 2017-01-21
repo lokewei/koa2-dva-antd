@@ -18,7 +18,6 @@ passport.deserializeUser(async (id, done) => {
 const LocalStrategy = require('passport-local').Strategy
 
 passport.use(new LocalStrategy((username, password, done) => {
-  console.log(`username: ${username}`);
   UserModel.verify(username, password)
     .then((result) => {
       if (result != null) {

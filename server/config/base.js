@@ -23,7 +23,7 @@ export default function middleware(app) {
     log4js.configure({
         appenders: [
             { type: 'console' },
-            { type: 'dateFile', filename: __dirname + '/../tmp/boilerplate.log' , "pattern":"-yyyy-MM-dd-hh.log","alwaysIncludePattern":false, category: 'file' }
+            { type: 'dateFile', filename: __dirname + '/../tmp/server.log' , "pattern":"-yyyy-MM-dd-hh.log","alwaysIncludePattern":false, category: 'file' }
         ],
         replaceConsole: true
     });

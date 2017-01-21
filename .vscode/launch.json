@@ -1,0 +1,58 @@
+{
+    // Use IntelliSense to find out which attributes exist for node debugging
+    // Use hover for the description of the existing attributes
+    // For further information visit https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug-Node",
+			"type": "node2",
+			"request": "launch",
+			"program": "${workspaceRoot}/start.js",
+			"stopOnEntry": false,
+			"args": [],
+			"cwd": "${workspaceRoot}",
+			"preLaunchTask": null,
+			"runtimeExecutable": null,
+			"runtimeArgs": [
+				"--nolazy"
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"externalConsole": false,
+			"sourceMaps": true,
+			"outDir": null
+        },
+        {
+            "name": "Debug-Nodemon",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/nodemon/bin/nodemon.js",
+            "cwd": "${workspaceRoot}",
+            "args": ["--debug","${workspaceRoot}/start.js"],
+            "preLaunchTask": null,
+            "runtimeExecutable": null,
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "externalConsole": false,
+			"sourceMaps": true
+        },
+        {
+            "name": "Attach",
+            "type": "node",
+            "request": "attach",
+            "port": 5858,
+            "address": "localhost",
+            "restart": true,
+            "sourceMaps": true,
+            "outDir": null,
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": null
+        }
+    ]
+}

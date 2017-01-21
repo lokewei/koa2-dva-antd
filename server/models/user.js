@@ -14,25 +14,27 @@ export default {
   },
 
   verify: async (username, password) => {
-    const user = await db.query('select * from tv_user where username = ?', [username]);
+    try {
+      const user = await db.query('select * from tv_user where username = ?', [username]);
 
-    LOG.warn(JSON.stringify({
-      username,
-      password,
-      user
-    }))
+      LOG.warn(JSON.stringify({
+        username,
+        password
+      }));
 
-    if (user == null || util.verifySync(password, user.password)) {
-      return null;
-    } else {
-      /*if((account[0].password == password) && (account[0].username == username)) {
-        return account[0];
-      } else {
+      if (user == null || user.length === 0 || util.verifySync(password, user[0].password)) {
         return null;
-      }*/
-      return {
-        name: 'test'
+      } else {
+        if ((user[0].password === password) && (user[0].username === username)) {
+          return user[0];
+        } else {
+          return null;
+        }
       }
+    } catch (error) {
+      LOG.error(error);
+      return null
     }
+    // return null;
   }
 }

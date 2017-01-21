@@ -15,9 +15,10 @@ export default function request (url, options) {
     })
   } else {
     return Ajax.ajax({
-      url: url,
+      url,
       method: options.method || 'get',
-      data: options.data || {},
+      // contentType: 'application/json; charset=utf-8',
+      data: Ajax.param(options.data) || {},
       processData: options.method === 'get',
       dataType: 'JSON'
     }).done((data) => {

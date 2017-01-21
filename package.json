@@ -4,8 +4,8 @@
   "description": "",
   "main": "start.js",
   "scripts": {
-    "client": "dora --plugins \"proxy,webpack,webpack-hmr\"",
-    "server": "nodemon start.js",
+    "client": "dora --plugins \"webpack,webpack-hmr\"",
+    "server": "nodemon --debug start.js",
     "start": "atool-build | nodemon start.js",
     "dev": "dora --plugins \"webpack,webpack-hmr\" | nodemon start.js",
     "build": "atool-build",
