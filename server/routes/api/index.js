@@ -6,6 +6,7 @@ const router = new Router();
 
 router.post('/login', async (ctx, next) => {
   const middleware = passport.authenticate('local', async(user) => {
+    console.log(user);
     if (user === false) {
       ctx.body = {
         success: false,
@@ -15,6 +16,8 @@ router.post('/login', async (ctx, next) => {
     } else {
       await ctx.login(user)
       ctx.body = {
+        success: true,
+        message: '登录成功',
         user
       }
     }

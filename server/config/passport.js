@@ -3,7 +3,7 @@ import passport from 'koa-passport';
 import UserModel from '../models/user'
 
 passport.serializeUser((user, done) => {
-  done(null, user.id)
+  done(null, user.ID)
 })
 
 passport.deserializeUser(async (id, done) => {

@@ -1,4 +1,4 @@
-import app from '../src/app';
+import app from '../server/app';
 import supertest from 'supertest'
 
 const request = supertest.agent(app.listen())
