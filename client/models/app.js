@@ -57,7 +57,7 @@ export default {
           type: 'loginSuccess',
           payload: {
             user: {
-              name: data.username
+              name: data.user.user_nicename
             }
           }
         })

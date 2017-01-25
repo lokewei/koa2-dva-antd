@@ -1,7 +1,7 @@
 const Mock = require('mockjs')
 const mockData = [
   require('../../mock/users'),
-  require('../../mock/app'),
+  // require('../../mock/app'),
   require('../../mock/dashboard')
 ]
 

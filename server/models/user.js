@@ -10,7 +10,8 @@ export default {
   },
 
   findById: async (id) => {
-    return await db.query('select * from tv_users where id = ?', [id]);
+    const results = await db.query('select * from tv_users where id = ?', [id]);
+    return results.length > 0 ? results[0] : null;
   },
 
   verify: async (username, password) => {
@@ -26,9 +27,9 @@ export default {
         return null;
       } else {
         if (util.verifySync(password, user[0].user_pass)) {
-          return user[0];
+          return { user: user[0], code: 0 };
         } else {
-          return -1;
+          return { user: false, code: -1 };
         }
       }
     } catch (error) {

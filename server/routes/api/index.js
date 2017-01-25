@@ -5,12 +5,11 @@ import UserRouter from './user'
 const router = new Router();
 
 router.post('/login', async (ctx, next) => {
-  const middleware = passport.authenticate('local', async(user) => {
-    console.log(user);
-    if (user === false) {
+  return passport.authenticate('local', async(user) => {
+    if (user === false || user === -1) {
       ctx.body = {
         success: false,
-        message: '用户不存在',
+        message: user === -1 ? '密码错误' : '用户不存在',
         status: 400
       }
     } else {
@@ -21,13 +20,32 @@ router.post('/login', async (ctx, next) => {
         user
       }
     }
-  })
-  await middleware.call(this, ctx, next);
+  })(ctx, next);
+  // await middleware.call(this, ctx, next);
 });
 
-router.get('/logout', async(ctx) => {
-  ctx.logout()
-  ctx.redirect('/')
+router.post('/logout', async(ctx) => {
+  try {
+    ctx.logout();
+    ctx.body = {
+      success: true,
+      message: '退出成功'
+    }
+  } catch (error) {
+    ctx.body = {
+      success: false,
+      message: '发生异常',
+      error
+    }
+  }
+  // ctx.redirect('/')
+})
+
+router.get('/userInfo', async(ctx) => {
+  ctx.body = {
+    success: ctx.isAuthenticated(),
+    user: ctx.state.user
+  }
 })
 
 router.get('/status', async(ctx) => {
