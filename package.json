@@ -16,7 +16,7 @@
     "index": "./client/index.js"
   },
   "dependencies": {
-    "antd": "^2.6.0",
+    "antd": "2.6.3",
     "bcryptjs": "^2.3.0",
     "classnames": "^2.2.5",
     "dva": "^1.2.0",

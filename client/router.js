@@ -2,6 +2,16 @@ import React from 'react'
 import { Router } from 'dva/router'
 import App from './routes/app'
 
+
+const registerModel = (() => {
+  const cached = {};
+  return (app, model) => {
+    if (!cached[model.namespace]) {
+      app.model(model);
+      cached[model.namespace] = 1;
+    }
+  }
+})();
 export default function ({ history, app }) {
   const routes = [
     {
@@ -9,7 +19,8 @@ export default function ({ history, app }) {
       component: App,
       getIndexRoute(nextState, cb) {
         require.ensure([], require => {
-          app.model(require('./models/dashboard'))
+          registerModel(app, require('./models/dashboard'));
+          // app.model(require('./models/dashboard'))
           cb(null, { component: require('./routes/dashboard') })
         })
       },
@@ -19,8 +30,18 @@ export default function ({ history, app }) {
           name: 'dashboard',
           getComponent(nextState, cb) {
             require.ensure([], require => {
-              app.model(require('./models/dashboard'))
+              registerModel(app, require('./models/dashboard'));
+              // app.model(require('./models/dashboard'))
               cb(null, require('./routes/dashboard'))
+            })
+          }
+        }, {
+          path: 'contentManage/contentImgs',
+          name: 'contentManage/contentImgs',
+          getComponent(nextState, cb) {
+            require.ensure([], require => {
+              registerModel(app, require('./models/contentImgs'));
+              cb(null, require('./routes/contentManage/contentImgs'))
             })
           }
         }, {
@@ -28,7 +49,8 @@ export default function ({ history, app }) {
           name: 'users',
           getComponent(nextState, cb) {
             require.ensure([], require => {
-              app.model(require('./models/users'))
+              registerModel(app, require('./models/users'));
+              // app.model(require('./models/users'))
               cb(null, require('./routes/users'))
             })
           }

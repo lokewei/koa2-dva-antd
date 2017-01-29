@@ -1,0 +1,110 @@
+.img_pick_panel {
+  padding: 0 30px;
+  .inner_container_box {
+    background-color: #fff;
+    border: 1px solid #e7e7eb;
+    .inner_main, .inner_side {
+      display: table-cell;
+      vertical-align: top;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+    .inner_main {
+      width: 2000px;
+      .media_list {
+        .media_title {
+          padding: 10px 20px;
+          p {
+            font-size: 14px;
+            float: left;
+          }
+          .title_extra {
+            text-align: right;
+          }
+        }
+        .media_tools {
+          padding: 10px 20px;
+          background-color: #f4f5f9;
+          border-bottom: 1px solid #e7e7eb;
+          button {
+            margin-left: 10px;
+          }
+        }
+      }
+    }
+    .inner_side {
+      width: 17%;
+      max-width: 240px;
+      border-left: 1px solid #e7e7eb;
+    }
+    .bd {
+      min-height: 530px;
+    }
+  }
+  .img_pick {
+    padding: 20px;
+    margin-right: -45px;
+    .img_item {
+      margin-bottom: 20px;
+      margin-right: 15px;
+      border: 1px solid #e7e7eb;
+      float: left;
+      text-align: center;
+      .img_item_bd {
+        position: relative;
+        .pic {
+          width: 169px;
+          height: 169px;
+          display: block;
+          background-repeat: no-repeat;
+          background-position: center center;
+          background-size: cover;
+        }
+      }
+      .msg_card_ft {
+        background-color: #f4f5f9;
+        border-top: 1px solid #e7e7eb;
+        .msg_card_opr_list {
+          font-size: 0;
+        }
+        .msg_card_opr_item {
+          text-align: center;
+          width: 33.33%;
+          a {
+            display: block;
+          }
+        }
+        .msg_card_opr_item_inner {
+          border: 0;
+          margin: 5px 0;
+          display: inline-block;
+          vertical-align: top;
+          width: 98.5%;
+          line-height: 18px;
+          height: 18px;
+          cursor: pointer;
+          i {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+            display: inline-block;
+            overflow: hidden;
+          }
+        }
+      }
+    }
+  }
+}
+
+.grid_line {
+  .grid_item {
+    float: left;
+  }
+  &:after {
+    content: "\200B";
+    display: block;
+    height: 0;
+    clear: both;
+  }
+}

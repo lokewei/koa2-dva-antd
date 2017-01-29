@@ -5,7 +5,7 @@ import Menus from './menu'
 
 const SubMenu = Menu.SubMenu
 
-function Header ({ user, logout, switchSider, siderFold
+function Header({ user, logout, switchSider, siderFold
   , isNavbar, menuPopoverVisible, location, switchMenuPopover }) {
   let handleClickMenu = e => e.key === 'logout' && logout()
   const menusProps = {
@@ -28,7 +28,7 @@ function Header ({ user, logout, switchSider, siderFold
         </div>}
 
       <Menu className="header-menu" mode="horizontal" onClick={handleClickMenu}>
-        <SubMenu style={{ float: 'right' }} title={< span > <Icon type="user" />{user.name}< /span>}>
+        <SubMenu openKeys={[]} style={{ float: 'right' }} title={< span > <Icon type="user" />{user.name}< /span>}>
           <Menu.Item key="logout">
             <a>注销</a>
           </Menu.Item>
