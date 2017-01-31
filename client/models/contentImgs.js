@@ -1,8 +1,9 @@
 export default {
   namespace: 'contentManage/contentImgs',
   state: {
-    imageDatas: [],
+    imageDatas: [{ID: 1, file_name: 'aaaa', file_origin_name: '小图片.jpg'}],    // [{ID, type, file_name, file_origin_name, path}]
     allChecked: false, // 全选按钮
+    checkedImgs: {},   // {ID: true|false}
     pagination: {
 
     }
