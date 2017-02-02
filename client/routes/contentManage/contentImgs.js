@@ -1,34 +1,47 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'dva'
-import { Upload, Button, Input, Icon, Checkbox, Popover, Tooltip, message } from 'antd'
+import { Upload, Button, Input, Icon, Checkbox, Popover, Tooltip, Spin, message } from 'antd'
 import classnames from 'classnames'
 import styles from './contentImgs.less'
+import PopConfirm from '../../components/popconfirm'
 
 /**
  * 图片下面的操作按钮组
  * @param {[type]} props [description]
  */
 const ImgOpts = (props) => {
-  // const { id, src } = props.data;
+  const { groupDatas } = props;
+  const realGroup = groupDatas.filter((record) => {
+    return record.ID !== 0;
+  })
   const getPopContent = (type) => {
     if (type === 1) {
-      return (
-        <div className={styles.popover_inner}>
-          <label>编辑名称</label>
-          <div style={{ width: 200 }}>
-            <Input size="large" defaultValue={props.file_origin_name} />
-          </div>
-          <div className={styles.popover_bar}>
-            <Button size="large" type="primary">确定</Button>
-            &nbsp;
-            <Button size="large" type="ghost">取消</Button>
-          </div>
+      return [
+        <label key="label">编辑名称</label>,
+        <div key="input" style={{ width: 200 }}>
+          <Input size="large" defaultValue={props.file_origin_name} />
         </div>
-      )
+      ];
     } else if (type === 2) {
-
+      if (realGroup.length > 1) {
+        return (
+          <div className={styles.frm_control}>
+            {
+              realGroup.map((record, index) => {
+                return (
+                  <Checkbox key={index} style={{ width: '46%' }}>{record.group_name}</Checkbox>
+                )
+              })
+            }
+          </div>
+        );
+      } else {
+        return (
+          <div>你还没有任何分组。</div>
+        )
+      }
     } else {
-
+      return <p>确定删除此素材吗？</p>
     }
   }
 
@@ -37,38 +50,41 @@ const ImgOpts = (props) => {
   return (
     <ul className={classnames(styles.grid_line, styles.msg_card_opr_list)}>
       <li className={classnames(styles.grid_item, styles.msg_card_opr_item)}>
-        <Popover
+        <PopConfirm
           content={getPopContent(1)}
           getPopupContainer={getPopupContainer}
-          placement="bottom"
-          trigger="click"
         >
           <span className={styles.msg_card_opr_item_inner}>
             <Tooltip title="编辑名称">
               <Icon type="edit" />
             </Tooltip>
           </span>
-        </Popover>
+        </PopConfirm>
       </li>
       <li className={classnames(styles.grid_item, styles.msg_card_opr_item)}>
-        <Tooltip title="移动分组">
+        <PopConfirm
+          content={getPopContent(2)}
+          getPopupContainer={getPopupContainer}
+          overlayStyle={{ width: 252 }}
+        >
           <span className={styles.msg_card_opr_item_inner}>
-            <Icon type="swap" />
+            <Tooltip title="移动分组">
+              <Icon type="swap" />
+            </Tooltip>
           </span>
-        </Tooltip>
+        </PopConfirm>
       </li>
       <li className={classnames(styles.grid_item, styles.msg_card_opr_item)}>
-        <Popover
-          content="嗯哼？"
-          placement="bottom"
-          trigger="click"
+        <PopConfirm
+          content={getPopContent(3)}
+          getPopupContainer={getPopupContainer}
         >
           <span className={styles.msg_card_opr_item_inner}>
             <Tooltip title="删除">
               <Icon type="delete" />
             </Tooltip>
           </span>
-        </Popover>
+        </PopConfirm>
       </li>
     </ul>
   );
@@ -103,31 +119,51 @@ ImgItem.propTypes = {
 }
 
 const GroupList = (props) => {
+  const { data = [], current, handleSwitch } = props;
+  const getPopupContainer = () => document.getElementById('imgsContent') || document.body;
+  const getPopContent = () => {
+    return [
+      <label key="label">创建分组</label>,
+      <div key="input" style={{ width: 200 }}>
+        <Input size="large" />
+      </div>
+    ];
+  }
   return (
     <div className={styles.group_list}>
       <div className={styles.inner_menu_box}>
         <dl className={styles.inner_menu}>
-          <dd className={classnames(styles.inner_menu_item, styles.selected)}>
-            <a className={styles.inner_menu_link}>
-              <strong>全部图片</strong>
-              <em>(5)</em>
-            </a>
-          </dd>
-          <dd className={styles.inner_menu_item}>
-            <a className={styles.inner_menu_link}>
-              <strong>未分组</strong>
-              <em>(5)</em>
-            </a>
-          </dd>
-          <dd className={styles.inner_menu_item}>
-            <a className={styles.inner_menu_link}>
-              <strong>风景图</strong>
-              <em>(0)</em>
-            </a>
-          </dd>
+          {
+            data.map((record) => {
+              const className = classnames({
+                [styles.inner_menu_item]: true,
+                [styles.selected]: current === record.ID
+              });
+              const handleClick = () => {
+                handleSwitch(record.ID);
+              }
+              return (
+                <dd key={record.ID} className={className}>
+                  <a className={styles.inner_menu_link} onClick={handleClick}>
+                    <strong>{record.group_name}</strong>
+                    <em>({record.count})</em>
+                  </a>
+                </dd>
+              );
+            })
+          }
         </dl>
       </div>
-      <div className={styles.inner_menu_item}></div>
+      <div className={styles.inner_menu_item}>
+        <PopConfirm
+          content={getPopContent()}
+          getPopupContainer={getPopupContainer}
+        >
+          <a className={styles.inner_menu_link}>
+            <Icon type="plus" /> 新建分组
+          </a>
+        </PopConfirm>
+      </div>
     </div>
   );
 }
@@ -138,7 +174,7 @@ const GroupList = (props) => {
  * [ContentImgs description]
  */
 function ContentImgs({ dispatch, contentImgs }) {
-  const { allChecked, imageDatas } = contentImgs;
+  const { allChecked, imageDatas, groupDatas, loading, currentGroup } = contentImgs;
   const uploadProps = {
     name: 'file',
     action: '/upload.do',
@@ -158,54 +194,65 @@ function ContentImgs({ dispatch, contentImgs }) {
     }
   }
 
+  // 全选/反选 所有图片
   const onCheckAll = (e) => {
     dispatch({
       type: 'contentManage/contentImgs/checkAll',
       payload: e.target.checked
     });
   }
+  // 切换图片分组
+  const handleSwitch = (id) => {
+    dispatch({
+      type: 'contentManage/contentImgs/switchGroup',
+      payload: id
+    })
+  }
+
   return (
-    <div className="content-inner" id="imgsContent">
-      <div className={styles.img_pick_panel}>
-        <div className={styles.inner_container_box}>
-          <div className={styles.inner_main}>
-            <div className={styles.bd}>
-              <div className={styles.media_list}>
-                <div className={styles.media_title}>
-                  <p>全部图片</p>
-                  <div className={styles.title_extra}>
-                    <Upload {...uploadProps}>
-                      <Button type="primary">
-                        <Icon type="upload" /> 上传图片
-                      </Button>
-                    </Upload>
+    <Spin spinning={loading}>
+      <div className="content-inner" id="imgsContent">
+        <div className={styles.img_pick_panel}>
+          <div className={styles.inner_container_box}>
+            <div className={styles.inner_main}>
+              <div className={styles.bd}>
+                <div className={styles.media_list}>
+                  <div className={styles.media_title}>
+                    <p>全部图片</p>
+                    <div className={styles.title_extra}>
+                      <Upload {...uploadProps}>
+                        <Button type="primary">
+                          <Icon type="upload" /> 上传图片
+                        </Button>
+                      </Upload>
+                    </div>
                   </div>
-                </div>
-                <div className={styles.media_tools}>
-                  <Checkbox checked={allChecked} onChange={onCheckAll}>全选</Checkbox>
-                  <Button disabled={!allChecked}>移动分组</Button>
-                  <Button disabled={!allChecked}>删除</Button>
-                </div>
-                <div className={styles.img_pick}>
-                  <ul>
-                    {
-                      imageDatas.map((item) => {
-                        return <ImgItem key={item.ID} {...item} />
-                      })
-                    }
-                  </ul>
+                  <div className={styles.media_tools}>
+                    <Checkbox checked={allChecked} onChange={onCheckAll}>全选</Checkbox>
+                    <Button disabled={!allChecked}>移动分组</Button>
+                    <Button disabled={!allChecked}>删除</Button>
+                  </div>
+                  <div className={styles.img_pick}>
+                    <ul>
+                      {
+                        imageDatas.map((item) => {
+                          return <ImgItem key={item.ID} {...item} groupDatas={groupDatas} />
+                        })
+                      }
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className={styles.inner_side}>
-            <div className={styles.bd}>
-              <GroupList />
+            <div className={styles.inner_side}>
+              <div className={styles.bd}>
+                <GroupList data={groupDatas} current={currentGroup} handleSwitch={handleSwitch} />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Spin>
   );
 }
 

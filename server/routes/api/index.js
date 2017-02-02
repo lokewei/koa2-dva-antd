@@ -1,6 +1,7 @@
 import Router from 'koa-router'
-import passport from 'koa-passport';
+import passport from 'koa-passport'
 import UserRouter from './user'
+import ContentImgsRouter from './contentImgs'
 
 const router = new Router();
 
@@ -55,5 +56,6 @@ router.get('/status', async(ctx) => {
 })
 
 router.use('/user', UserRouter.routes(), UserRouter.allowedMethods());
+router.use('/contentImgs', ContentImgsRouter.routes(), ContentImgsRouter.allowedMethods());
 
 export default router;

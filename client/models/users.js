@@ -21,7 +21,7 @@ export default {
   },
 
   subscriptions: {
-    setup ({ dispatch, history }) {
+    setup({ dispatch, history }) {
       history.listen(location => {
         if (location.pathname === '/users') {
           dispatch({
@@ -34,7 +34,7 @@ export default {
   },
 
   effects: {
-    *query ({ payload }, { call, put }) {
+    *query({ payload }, { call, put }) {
       yield put({ type: 'showLoading' })
       const data = yield call(query, parse(payload))
       if (data) {

@@ -8,8 +8,10 @@ import Logger from 'koa-logger';
 import mount from 'koa-mount';
 import bodyParser from 'koa-bodyparser';
 import session from 'koa-generic-session';
+import mysqlStore from 'koa-mysql-session';
 import views from 'koa-views';
 import proxy from 'koa-proxy';
+import config from './config'
 
 import './passport';
 import passport from 'koa-passport';
@@ -40,7 +42,18 @@ export default function middleware(app) {
     app.use(mount("/", convert(Serve(__dirname + '/../public/'))));
 
     app.keys = ['tailv-session-key'];
-    app.use(convert(session()))
+    app.use(convert(session({
+        store: new mysqlStore({
+            host: config.mysql.host,
+            user: config.mysql.user,
+            password: config.mysql.password,
+            database: config.mysql.database
+        }),
+        rolling: true,
+        cookie: {
+            maxage: 30 * 60 * 1000
+        }
+    })));
 
     app.use(passport.initialize())
     app.use(passport.session())

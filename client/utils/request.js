@@ -14,11 +14,12 @@ export default function request (url, options) {
       format: 'json'
     })
   } else {
+    const param = options.data ? Ajax.param(options.data) : {};
     return Ajax.ajax({
       url,
       method: options.method || 'get',
       // contentType: 'application/json; charset=utf-8',
-      data: Ajax.param(options.data) || {},
+      data: param,
       processData: options.method === 'get',
       dataType: 'JSON'
     }).done((data) => {
