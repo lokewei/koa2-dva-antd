@@ -38,7 +38,13 @@ export default function middleware(app) {
         match: /.+\.(js|css)/
       })));
     }
-    app.use(bodyParser())
+    app.use(bodyParser());
+    app.use(async (ctx, next) => {
+        if (!ctx.req.body) {
+            ctx.req.body = ctx.request.body;
+        }
+        await next();
+    });
     app.use(mount("/", convert(Serve(__dirname + '/../public/'))));
 
     app.keys = ['tailv-session-key'];

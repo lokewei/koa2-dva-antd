@@ -13,6 +13,7 @@ export default {
     user: {
       name: '吴彦祖'
     },
+    loginMessageShowing: false,
     loginButtonLoading: false,
     menuPopoverVisible: false,
     siderFold: localStorage.getItem('antdAdminSiderFold') === 'true',
@@ -48,6 +49,10 @@ export default {
           }
         })
       }
+      yield put({
+        type: 'changeLoginMessageShow',
+        payload: false
+      })
     },
     *queryUser({ payload }, { call, put }) {
       yield put({ type: 'showLoading' });
@@ -104,7 +109,8 @@ export default {
         ...state,
         ...action.payload,
         login: true,
-        loginButtonLoading: false
+        loginButtonLoading: false,
+        loginMessageShowing: true
       }
     },
     logoutSuccess(state) {
@@ -121,7 +127,14 @@ export default {
           type: 'error'
         },
         login: false,
-        loginButtonLoading: false
+        loginButtonLoading: false,
+        loginMessageShowing: true
+      }
+    },
+    changeLoginMessageShow(state, { payload }) {
+      return {
+        ...state,
+        loginMessageShowing: payload
       }
     },
     showLoginButtonLoading(state) {

@@ -3,6 +3,9 @@ import { Router } from 'dva/router'
 import App from './routes/app'
 
 
+import Post from "./routes/Post.js";
+
+
 const registerModel = (() => {
   const cached = {};
   return (app, model) => {

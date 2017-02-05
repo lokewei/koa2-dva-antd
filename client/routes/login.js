@@ -7,6 +7,7 @@ import Message from '../components/message'
 const FormItem = Form.Item
 
 const login = ({
+  loginMessageShowing,
   loginButtonLoading,
   onOk,
   form: {
@@ -29,7 +30,7 @@ const login = ({
 
   return (
     <div className={styles.form}>
-      <Message type={type} message={message} />
+      <Message type={type} message={message} showing={loginMessageShowing} />
       <div className={styles.logo}>
         <img src={config.logoSrc} alt="logo" />
         <span>泰旅目的地后台</span>

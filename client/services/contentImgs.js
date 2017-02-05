@@ -12,3 +12,10 @@ export async function groupList() {
     method: 'get'
   })
 }
+
+export async function delImgItem(id) {
+  return await request('/api/contentImgs/delImgItem', {
+    method: 'post',
+    data: { id }
+  })
+}

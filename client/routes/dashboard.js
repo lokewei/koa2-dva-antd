@@ -21,6 +21,7 @@ function Dashboard({ dashboard /* , dispatch*/ }) {
 
   return (
     <Row gutter={24}>
+      <p style={{ color: 'red' }}>演示用，非真实数据!</p>
       {numberCards}
       <Col lg={18} md={24}>
         <Card bordered={false} bodyStyle={{ padding: '24px 36px 24px 0' }}>

@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'dva'
-import { Upload, Button, Input, Icon, Checkbox, Popover, Tooltip, Spin, message } from 'antd'
+import { Upload, Button, Input, Icon, Checkbox, Tooltip, Spin, message } from 'antd'
 import classnames from 'classnames'
 import styles from './contentImgs.less'
+import Message from '../../components/message'
 import PopConfirm from '../../components/popconfirm'
 
 /**
@@ -10,7 +11,7 @@ import PopConfirm from '../../components/popconfirm'
  * @param {[type]} props [description]
  */
 const ImgOpts = (props) => {
-  const { groupDatas } = props;
+  const { groupDatas, handleDel } = props;
   const realGroup = groupDatas.filter((record) => {
     return record.ID !== 0;
   })
@@ -78,6 +79,7 @@ const ImgOpts = (props) => {
         <PopConfirm
           content={getPopContent(3)}
           getPopupContainer={getPopupContainer}
+          onOk={() => { handleDel(props.ID); }}
         >
           <span className={styles.msg_card_opr_item_inner}>
             <Tooltip title="删除">
@@ -96,13 +98,21 @@ const ImgOpts = (props) => {
  * @param {[type]} props [description]
  */
 const ImgItem = (props) => {
-  // const { ID } = props;
+  const { ID, state, handleCheck } = props;
   return (
     <li className={styles.img_item}>
       <div className={styles.img_item_bd}>
-        <span className={styles.pic}></span>
+        <span
+          className={styles.pic}
+          style={{ backgroundImage: `url(api/contentImgs/getFile?file=${props.path})` }}
+        />
         <span className={styles.check_content}>
-          <Checkbox>{props.file_origin_name}</Checkbox>
+          <Checkbox
+            checked={state.checked}
+            onChange={(e) => { handleCheck(ID, e.target.checked) }}
+          >
+          {props.file_origin_name}
+          </Checkbox>
         </span>
       </div>
       <div className={styles.msg_card_ft}>
@@ -118,6 +128,10 @@ ImgItem.propTypes = {
   file_origin_name: PropTypes.string
 }
 
+/**
+ * 右边的图片组列表
+ * @param {[type]} props [description]
+ */
 const GroupList = (props) => {
   const { data = [], current, handleSwitch } = props;
   const getPopupContainer = () => document.getElementById('imgsContent') || document.body;
@@ -174,22 +188,45 @@ const GroupList = (props) => {
  * [ContentImgs description]
  */
 function ContentImgs({ dispatch, contentImgs }) {
-  const { allChecked, imageDatas, groupDatas, loading, currentGroup } = contentImgs;
+  const {
+    allChecked,
+    imageDatas,
+    checkedImgs,
+    groupDatas,
+    loading,
+    currentGroup,
+    optMessage,
+    messageShowing,
+    messageType
+  } = contentImgs;
   const uploadProps = {
     name: 'file',
-    action: '/upload.do',
-    headers: {
-      authorization: 'authorization-text'
-    },
+    action: '/api/contentImgs/upload',
     accept: 'image/bmp,image/png,image/jpeg,image/jpg,image/gif',
+    data: { groupId: currentGroup > 0 ? currentGroup : null },
+    showUploadList: false,
     onChange(info) {
+      if (info.file.status === 'uploading') {
+        dispatch({
+          type: 'contentManage/contentImgs/showLoading'
+        });
+      }
       if (info.file.status !== 'uploading') {
         console.log(info.file, info.fileList);
       }
       if (info.file.status === 'done') {
         message.success(`${info.file.name} 文件上传成功`);
+        dispatch({
+          type: 'contentManage/contentImgs/hideLoading'
+        });
+        dispatch({
+          type: 'contentManage/contentImgs/queryImgs'
+        })
       } else if (info.file.status === 'error') {
         message.error(`${info.file.name} 文件上传失败`);
+        dispatch({
+          type: 'contentManage/contentImgs/hideLoading'
+        });
       }
     }
   }
@@ -209,8 +246,27 @@ function ContentImgs({ dispatch, contentImgs }) {
     })
   }
 
+  const imgItemProps = {
+    groupDatas,
+    // 单选一个图片元素
+    handleCheck(ID, checked) {
+      dispatch({
+        type: 'contentManage/contentImgs/checkImgItem',
+        payload: { ID, checked }
+      });
+    },
+    // 删除一个图片元素
+    handleDel(ID) {
+      dispatch({
+        type: 'contentManage/contentImgs/delImgItem',
+        payload: ID
+      });
+    }
+  };
+
   return (
     <Spin spinning={loading}>
+      <Message type={messageType} message={optMessage} showing={messageShowing} />
       <div className="content-inner" id="imgsContent">
         <div className={styles.img_pick_panel}>
           <div className={styles.inner_container_box}>
@@ -236,7 +292,15 @@ function ContentImgs({ dispatch, contentImgs }) {
                     <ul>
                       {
                         imageDatas.map((item) => {
-                          return <ImgItem key={item.ID} {...item} groupDatas={groupDatas} />
+                          const state = checkedImgs[item.ID];
+                          return (
+                            <ImgItem
+                              key={item.ID}
+                              {...item}
+                              {...imgItemProps}
+                              state={state}
+                            />
+                        );
                         })
                       }
                     </ul>

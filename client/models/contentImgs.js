@@ -1,9 +1,14 @@
-import { query, groupList } from '../services/contentImgs'
+import { query, groupList, delImgItem } from '../services/contentImgs'
+import { routerRedux } from 'dva/router';
+import _ from 'lodash'
 
 export default {
   namespace: 'contentManage/contentImgs',
   state: {
     loading: false,
+    optMessage: '',
+    messageShowing: false,
+    messageType: 'info',
     imageDatas: [], // [{ID, type, file_name, file_origin_name, path}]
     groupDatas: [],
     allChecked: false, // 全选按钮
@@ -38,17 +43,25 @@ export default {
   effects: {
     *init({ payload }, { put, call }) {
       yield put({ type: 'showLoading' });
-      const data = yield call(query, payload);
-      const groupData = yield call(groupList);
-      if (data && groupData) {
-        yield put({
-          type: 'initSuccess',
-          payload: {
-            data,
-            groupData
-          }
-        })
+      const currentGroup = parseInt(payload.groupId, 10);
+      if (!isNaN(currentGroup)) {
+        yield put({ type: 'switchGroupSuccess', payload: currentGroup });
       }
+      const { data: data } = yield call(query, payload);
+      const { data: groupData } = yield call(groupList);
+      if (data) {
+        yield put({
+          type: 'setImageDatas',
+          payload: data
+        });
+      }
+      if (groupData) {
+        yield put({
+          type: 'setGroupDatas',
+          payload: groupData
+        });
+      }
+      yield put({ type: 'initSuccess' });
     },
     *checkAll({ payload }, { put }) {
       if (payload === true) {
@@ -61,28 +74,61 @@ export default {
         });
       }
     },
-    *query({ payload }, { put, call }) {
+    *queryImgs({ payload }, { put, call }) {
       yield put({ type: 'showLoading' });
-      const data = yield call(query, payload);
+      const { data } = yield call(query, payload);
       if (data) {
         yield put({
-          type: 'querySuccess',
+          type: 'setImageDatas',
           payload: data
         })
       }
+      yield put({ type: 'hideLoading' });
+    },
+    *delImgItem({ payload }, { put, call }) {
+      yield put({ type: 'showLoading' });
+      const data = yield call(delImgItem, payload);
+      if (data) {
+        yield put({
+          type: 'changeMessageShow',
+          payload: {
+            showing: true,
+            messageType: data.success ? 'success' : 'error',
+            message: data.message
+          }
+        });
+      }
+      // 重新拉一次图片列表回来
+      const { data: imgData } = yield call(query, payload);
+      if (data) {
+        yield put({ type: 'setImageDatas', payload: imgData });
+      }
+      yield put({ type: 'hideLoading' });
+      yield put({ type: 'changeMessageShow', payload: { showing: false } });
+    },
+    *switchGroup({ payload }, { put }) {
+      yield put(routerRedux.push({
+        pathname: '/contentManage/contentImgs',
+        query: {
+          groupId: payload
+        }
+      }))
     }
-/*    *switchGroup({ payload }, { put, call }) {
-
-    }*/
   },
   reducers: {
     allChecked(state) {
+      _.forOwn(state.checkedImgs, (record) => {
+        record.checked = true;
+      })
       return {
         ...state,
         allChecked: true
       }
     },
     allUnchecked(state) {
+      _.forOwn(state.checkedImgs, (record) => {
+        record.checked = false;
+      })
       return {
         ...state,
         allChecked: false
@@ -94,21 +140,49 @@ export default {
     hideLoading(state) {
       return { ...state, loading: false };
     },
-    initSuccess(state, action) {
-      const { data: { data: imageDatas }, groupData: { data: groupDatas } } = action.payload;
+    changeMessageShow(state, { payload }) {
+      const { showing, message, messageType } = payload;
+      return {
+        ...state,
+        messageShowing: showing,
+        messageType,
+        optMessage: message
+      }
+    },
+    initSuccess(state) {
+      return { ...state, loading: false };
+    },
+    setImageDatas(state, action) {
+      const imageDatas = action.payload;
       const checkedImgs = {};
       imageDatas.forEach((record) => {
+        const preStat = checkedImgs[record.ID] || {};
         checkedImgs[record.ID] = {
           checked: false,
           nameEditing: false,
           nameEditingValue: record.file_origin_name,
           groupChanging: false,
-          deleting: false
+          deleting: false,
+          ...preStat
         }
       });
-      return { ...state, checkedImgs, imageDatas, groupDatas, loading: false };
+      return { ...state, checkedImgs, imageDatas };
     },
-    switchGroup(state, { payload }) {
+    delImgItemSuccess(state, action) {
+      const id = action.payload;
+      // state.imageDatas.for
+    },
+    setGroupDatas(state, action) {
+      const groupDatas = action.payload;
+      return { ...state, groupDatas };
+    },
+    checkImgItem(state, { payload }) {
+      state.checkedImgs[payload.ID].checked = payload.checked;
+      return {
+        ...state
+      }
+    },
+    switchGroupSuccess(state, { payload }) {
       return {
         ...state,
         currentGroup: payload

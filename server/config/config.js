@@ -16,7 +16,8 @@ let specific = {
     app: {
       port: 5000,
       name: 'tailv - Dev',
-      excluded: 'excluded_path'
+      excluded: 'excluded_path',
+      uploadPath: 'uploads/'
     },
     mysql: {
       host: 'localhost',
@@ -30,7 +31,8 @@ let specific = {
     app: {
       port: process.env.PORT || 5000,
       name: 'tailv',
-      excluded: 'excluded_path'
+      excluded: 'excluded_path',
+      uploadPath: 'uploads/'
     },
     mysql: {
       host: 'localhost',

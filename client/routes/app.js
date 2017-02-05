@@ -15,6 +15,7 @@ function App({ children, location, dispatch, app }) {
     login,
     loading,
     submitResult,
+    loginMessageShowing,
     loginButtonLoading,
     user,
     siderFold,
@@ -24,6 +25,7 @@ function App({ children, location, dispatch, app }) {
   } = app;
   const loginProps = {
     loading,
+    loginMessageShowing,
     loginButtonLoading,
     submitResult,
     onOk(data) {
