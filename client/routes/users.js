@@ -31,9 +31,11 @@ function Users ({ location, dispatch, users }) {
     loading,
     pagination: pagination,
     onPageChange (page) {
+      const query = location.query;
       dispatch(routerRedux.push({
         pathname: '/users',
         query: {
+          ...query,
           page: page.current,
           pageSize: page.pageSize
         }
@@ -60,10 +62,17 @@ function Users ({ location, dispatch, users }) {
     field,
     keyword,
     onSearch (fieldsValue) {
-      dispatch({
-        type: 'users/query',
-        payload: fieldsValue
-      })
+      !!fieldsValue.keyword.length ?
+      dispatch(routerRedux.push({
+        pathname: '/users',
+        query: {
+          field: fieldsValue.field,
+          keyword: fieldsValue.keyword
+        }
+      })) :
+      dispatch(routerRedux.push({
+        pathname: '/users'
+      }));
     },
     onAdd () {
       dispatch({

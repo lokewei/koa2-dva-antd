@@ -4,7 +4,7 @@ export default {
 
   },
   subscriptions: {
-    *setup({ dispatch, history }) {
+    setup({ dispatch, history }) {
 
     }
   },
@@ -12,6 +12,6 @@ export default {
 
   },
   reducers: {
-    
+
   }
 }

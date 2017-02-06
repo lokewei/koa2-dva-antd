@@ -2,10 +2,6 @@ import React from 'react'
 import { Router } from 'dva/router'
 import App from './routes/app'
 
-
-import Post from "./routes/Post.js";
-
-
 const registerModel = (() => {
   const cached = {};
   return (app, model) => {
@@ -45,6 +41,15 @@ export default function ({ history, app }) {
             require.ensure([], require => {
               registerModel(app, require('./models/contentImgs'));
               cb(null, require('./routes/contentManage/contentImgs'))
+            })
+          }
+        }, {
+          path: 'contentManage/contentTypes',
+          name: 'contentManage/contentTypes',
+          getComponent(nextState, cb) {
+            require.ensure([], require => {
+              registerModel(app, require('./models/contentTypes'));
+              cb(null, require('./routes/contentManage/contentTypes'))
             })
           }
         }, {
