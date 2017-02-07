@@ -13,10 +13,15 @@ router.get('/list', async (ctx) => {
 });
 
 router.get('/types', async (ctx) => {
-  const data = await PostTypesModel.list();
+  const { page = 1, pageSize = 10, ...params } = ctx.query;
+  const pagination = {
+    page: parseInt(page, 10) || 1,
+    pageSize: parseInt(pageSize, 10) || 10
+  }
+  const data = await PostTypesModel.list(params, pagination);
   ctx.body = {
-    success: true,
-    data
+    success: !!data,
+    ...data
   }
 });
 
@@ -50,6 +55,7 @@ router.post('/types/update', async (ctx) => {
 
 router.post('/types/delete', async (ctx) => {
   const { id } = ctx.req.body;
+  console.log(ctx.req.body);
   try {
     await PostTypesModel.delete(id);
     ctx.body = {

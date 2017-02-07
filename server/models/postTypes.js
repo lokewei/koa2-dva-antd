@@ -1,8 +1,44 @@
 import db from '../lib/db';
 
+const buildConditions = (params) => {
+  const conditions = [];
+  const values = [];
+
+  if (typeof params.key !== 'undefined'
+      && typeof params.value !== 'undefined') {
+    conditions.push(`${params.key} = ?`);
+    values.push(params.value);
+  }
+
+  return {
+    where: conditions.length ?
+             conditions.join(' AND ') : '1=1',
+    values
+  };
+}
+
 export default {
-  list: async () => {
-    return await db.query('select * from tv_post_types');
+  list: async (params, pagination) => {
+    const conditions = buildConditions(params);
+    const page = pagination.page;
+    const pageSize = pagination.pageSize;
+    const skip = (page - 1) * pageSize;
+    const limit = `${skip}, ${skip + pageSize}`;
+    const totalResult = await db.query(`select count(1) as total from tv_post_types where ${conditions.where}`, conditions.values);
+    const total = totalResult[0].total;
+    const pageNum = Math.ceil(total / pageSize);
+    const data = await db.query(`select * from tv_post_types where ${conditions.where} LIMIT ${limit}`, conditions.values);
+    if (page > pageNum) {
+      return null;
+    }
+    return {
+      data,
+      page: {
+        current: page,
+        pageSize,
+        total
+      }
+    }
   },
   create: async (name, summary) => {
     await db.query(`

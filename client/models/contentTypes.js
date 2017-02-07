@@ -8,6 +8,7 @@ export default {
     currentItem: {},
     modalVisible: false,
     modalType: 'create',
+    conditions: {},
     pagination: {
       showSizeChanger: true,
       showQuickJumper: true,
@@ -31,6 +32,7 @@ export default {
   effects: {
     *query({ payload }, { put, call }) {
       yield put({ type: 'showLoading' });
+      yield put({ type: 'setConditions', payload });
       const data = yield call(query, payload);
       if (data) {
         yield put({
@@ -43,57 +45,61 @@ export default {
       }
       yield put({ type: 'hideLoading' });
     },
-    *'delete'({ payload }, { call, put }) {
-      yield put({ type: 'showLoading' })
-      const data = yield call(remove, { id: payload })
-      if (data && data.success) {
-        yield put({
-          type: 'setListDatas',
-          payload: {
-            list: data.data,
-            pagination: {
-              total: data.page.total,
-              current: data.page.current
+    *'delete'({ payload }, { call, put, select }) {
+      yield put({ type: 'showLoading' });
+      console.log(payload)
+      const result = yield call(remove, { id: payload });
+      if (result && result.success) {
+        const conditions = yield select((state) => state['contentManage/contentTypes'].conditions);
+        const data = yield call(query, conditions);
+        if (data && data.success) {
+          yield put({
+            type: 'setListDatas',
+            payload: {
+              list: data.data
             }
-          }
-        })
+          })
+        }
       }
+      yield put({ type: 'hideLoading' });
     },
-    *create({ payload }, { call, put }) {
+    *create({ payload }, { call, put, select }) {
       yield put({ type: 'hideModal' })
       yield put({ type: 'showLoading' })
-      const data = yield call(create, payload)
-      if (data && data.success) {
-        yield put({
-          type: 'setListDatas',
-          payload: {
-            list: data.data,
-            pagination: {
-              total: data.page.total,
-              current: data.page.current
+      const result = yield call(create, payload)
+      if (result && result.success) {
+        const conditions = yield select((state) => state['contentManage/contentTypes'].conditions);
+        const data = yield call(query, conditions);
+        if (data && data.success) {
+          yield put({
+            type: 'setListDatas',
+            payload: {
+              list: data.data
             }
-          }
-        })
+          })
+        }
       }
+      yield put({ type: 'hideLoading' });
     },
     *update({ payload }, { select, call, put }) {
       yield put({ type: 'hideModal' })
       yield put({ type: 'showLoading' })
       const id = yield select((state) => state['contentManage/contentTypes'].currentItem.type_id)
-      const newUser = { ...payload, id }
-      const data = yield call(update, newUser)
-      if (data && data.success) {
-        yield put({
-          type: 'setListDatas',
-          payload: {
-            list: data.data,
-            pagination: {
-              total: data.page.total,
-              current: data.page.current
+      const newRecord = { ...payload, type_id: id }
+      const result = yield call(update, newRecord)
+      if (result && result.success) {
+        const conditions = yield select((state) => state['contentManage/contentTypes'].conditions);
+        const data = yield call(query, conditions);
+        if (data && data.success) {
+          yield put({
+            type: 'setListDatas',
+            payload: {
+              list: data.data
             }
-          }
-        })
+          })
+        }
       }
+      yield put({ type: 'hideLoading' });
     }
   },
   reducers: {
@@ -108,6 +114,10 @@ export default {
     },
     hideModal(state) {
       return { ...state, modalVisible: false }
+    },
+    setConditions(state, action) {
+      const { payload: conditions } = action;
+      return { ...state, conditions };
     },
     setListDatas(state, action) {
       return { ...state, ...action.payload };
