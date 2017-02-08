@@ -54,16 +54,19 @@ router.post('/types/update', async (ctx) => {
 });
 
 router.post('/types/delete', async (ctx) => {
-  const { id } = ctx.req.body;
-  console.log(ctx.req.body);
+  const id = parseInt(ctx.req.body.id, 10);
   try {
+    if (isNaN(id)) {
+      throw new Error('id is NaN');
+    }
     await PostTypesModel.delete(id);
     ctx.body = {
       success: true
     }
   } catch (error) {
     ctx.body = {
-      success: false
+      success: false,
+      message: 'delete error'
     }
   }
 });

@@ -47,8 +47,7 @@ export default {
     },
     *'delete'({ payload }, { call, put, select }) {
       yield put({ type: 'showLoading' });
-      console.log(payload)
-      const result = yield call(remove, { id: payload });
+      const result = yield call(remove, payload);
       if (result && result.success) {
         const conditions = yield select((state) => state['contentManage/contentTypes'].conditions);
         const data = yield call(query, conditions);

@@ -4,10 +4,10 @@ const buildConditions = (params) => {
   const conditions = [];
   const values = [];
 
-  if (typeof params.key !== 'undefined'
-      && typeof params.value !== 'undefined') {
-    conditions.push(`${params.key} = ?`);
-    values.push(params.value);
+  if (typeof params.field !== 'undefined'
+      && typeof params.keyword !== 'undefined') {
+    conditions.push(`${params.field} like ?`);
+    values.push(`%${params.keyword}%`);
   }
 
   return {
@@ -59,7 +59,7 @@ export default {
       return null;
     }
     await db.query(`
-      delete from tv_post_types where id = ?
+      delete from tv_post_types where type_id = ?
     `, [id]);
   }
 }
