@@ -35,7 +35,7 @@ export default function middleware(app) {
     if (process.env.NODE_ENV === 'development') {
       app.use(convert(proxy({
         host: 'http://localhost:8000',
-        match: /.+\.(js|css)/
+        match: /^(?!\/assets).+\.(js|css)/
       })));
     }
     app.use(bodyParser());

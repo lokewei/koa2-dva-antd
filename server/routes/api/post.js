@@ -12,6 +12,52 @@ router.get('/list', async (ctx) => {
   }
 });
 
+router.post('/create', async (ctx) => {
+  const { name, summary } = ctx.req.body;
+  try {
+    await PostModel.create(name, summary);
+    ctx.body = {
+      success: true
+    }
+  } catch (error) {
+    ctx.body = {
+      success: false
+    }
+  }
+});
+
+router.post('/update', async (ctx) => {
+  const { name, summary } = ctx.req.body;
+  try {
+    await PostModel.update(name, summary);
+    ctx.body = {
+      success: true
+    }
+  } catch (error) {
+    ctx.body = {
+      success: false
+    }
+  }
+});
+
+router.post('/delete', async (ctx) => {
+  const id = parseInt(ctx.req.body.id, 10);
+  try {
+    if (isNaN(id)) {
+      throw new Error('id is NaN');
+    }
+    await PostModel.delete(id);
+    ctx.body = {
+      success: true
+    }
+  } catch (error) {
+    ctx.body = {
+      success: false,
+      message: 'delete error'
+    }
+  }
+});
+
 router.get('/types', async (ctx) => {
   const { page = 1, pageSize = 10, ...params } = ctx.query;
   const pagination = {
@@ -69,11 +115,6 @@ router.post('/types/delete', async (ctx) => {
       message: 'delete error'
     }
   }
-});
-
-router.post('/create', (ctx) => {
-  const {name, summary} = ctx.req.body;
-
 });
 
 export default router;
