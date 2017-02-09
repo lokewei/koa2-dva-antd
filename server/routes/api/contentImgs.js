@@ -68,12 +68,15 @@ router.post('/upload', upload.single('file'), async (ctx, next) => {
 });
 
 router.get('/getFile', async (ctx) => {
-  const { file } = ctx.query;
+  const { id, file } = ctx.query;
+  const opt = {
+    root: rootPath
+  }
   if (file) {
-    const opt = {
-      root: rootPath
-    }
     await send(ctx, file, opt);
+  } else if (id) {
+    const [data] = await ContentImgsModel.getById(id);
+    await send(ctx, data.path, opt);
   } else {
     ctx.body = {
       success: false,

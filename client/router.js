@@ -53,6 +53,15 @@ export default function ({ history, app }) {
             })
           }
         }, {
+          path: 'contentManage/contents',
+          name: 'contentManage/contents',
+          getComponent(nextState, cb) {
+            require.ensure([], require => {
+              registerModel(app, require('./models/contents'));
+              cb(null, require('./routes/contentManage/contents'))
+            })
+          }
+        }, {
           path: 'users',
           name: 'users',
           getComponent(nextState, cb) {

@@ -1,6 +1,6 @@
 import db from '../lib/db';
 
-const buildConditions = (params) => {
+const buildConditions = (params = {}) => {
   const conditions = [];
   const values = [];
 

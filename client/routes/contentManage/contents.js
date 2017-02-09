@@ -5,6 +5,7 @@ import { Form, Button, Row, Col,
          Table, Popconfirm,
          Input, Modal } from 'antd'
 import SearchGroup from '../../components/ui/search'
+import styles from './contents.less'
 import TinyMCE from 'react-tinymce';
 
 const FormItem = Form.Item
@@ -20,7 +21,7 @@ const Search = ({
     keyword,
     size: 'large',
     select: true,
-    selectOptions: [{ value: 'name', name: '标题' }, { value: 'summary', name: '描述' }],
+    selectOptions: [{ value: 'name', name: '标题' }],
     selectProps: {
       defaultValue: 'name'
     },
@@ -87,43 +88,41 @@ const modal = ({
     visible,
     onOk: handleOk,
     onCancel,
-    wrapClassName: 'vertical-center-modal'
+    // wrapClassName: 'vertical-center-modal',
+    width: 'calc(100% - 275px)',
+    style: { marginLeft: 255 }
   }
 
   const formItemLayout = {
     labelCol: {
-      span: 6
+      span: 4
     },
     wrapperCol: {
-      span: 14
+      span: 18
     }
   }
 
   return (
     <Modal {...modalOpts}>
       <Form>
-        <FormItem label="名称：" hasFeedback {...formItemLayout}>
-          {getFieldDecorator('name', {
+        <FormItem label="标题：" hasFeedback {...formItemLayout}>
+          {getFieldDecorator('title', {
             initialValue: item.name,
             rules: [
               {
                 required: true,
-                message: '名称未填写'
+                message: '标题未填写'
               }
             ]
           })(<Input />)}
         </FormItem>
-        <FormItem label="描述：" hasFeedback {...formItemLayout}>
-          {getFieldDecorator('summary', {
-            initialValue: item.summary,
-            rules: [
-              {
-                required: true,
-                message: '描述未填写'
-              }
-            ]
-          })(<Input type="textarea" />)}
-        </FormItem>
+        <TinyMCE
+          content="<p>这里插入文章内容</p>"
+          config={{
+            plugins: 'link image code',
+            language: 'zh_CN'
+          }}
+        />
       </Form>
     </Modal>
   )
@@ -151,16 +150,32 @@ const ContentList = (props) => {
   const columns = [
     {
       title: '封面',
-      dataIndex: 'name',
-      key: 'name'
+      dataIndex: 'post_cover',
+      key: 'post_cover',
+      width: 100,
+      render: (fileId) => {
+        if (fileId > 0) {
+          return (
+            <span
+              className={styles.pic}
+              style={{ backgroundImage: `url("api/contentImgs/getFile?id=${fileId}")` }}
+            />);
+        } else {
+          return <span className={styles.pic} />
+        }
+      }
     }, {
-      title: '描述',
-      dataIndex: 'summary',
-      key: 'summary'
+      title: '标题',
+      dataIndex: 'post_title',
+      key: 'post_title'
     }, {
-      title: '',
-      dataIndex: 'nickName',
-      key: 'nickName'
+      title: '创建时间',
+      dataIndex: 'post_date',
+      key: 'post_date'
+    }, {
+      title: '最后修改时间',
+      dataIndex: 'post_modified',
+      key: 'post_modified'
     }, {
       title: '操作',
       key: 'operation',
@@ -168,7 +183,7 @@ const ContentList = (props) => {
       render: (text, record) => (
         <p>
           <a onClick={() => onEditItem(record)} style={{ marginRight: 4 }}>编辑</a>
-          <Popconfirm title="确定要删除吗？" onConfirm={() => onDeleteItem(record.type_id)}>
+          <Popconfirm title="确定要删除吗？" onConfirm={() => onDeleteItem(record.ID)}>
             <a>删除</a>
           </Popconfirm>
         </p>
@@ -184,7 +199,7 @@ const ContentList = (props) => {
       onChange={onPageChange}
       pagination={pagination}
       simple
-      rowKey={record => record.type_id}
+      rowKey={record => record.ID}
     />
   );
 };

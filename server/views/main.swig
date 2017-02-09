@@ -25,6 +25,6 @@
     {% else %}
     <script src="index.js"></script>
     {% endif %}
-    <script src="assets/js/tinymce.min.js"></script>
+    <script src="assets/js/tinymce/tinymce.min.js"></script>
   </body>
 </html>

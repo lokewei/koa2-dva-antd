@@ -1,6 +1,6 @@
 import db from '../lib/db';
 
-const buildConditions = (params) => {
+const buildConditions = (params = {}) => {
   const conditions = [];
   const values = [];
 
@@ -44,23 +44,23 @@ export default {
   create: async (name, summary) => {
     await db.query(`
     insert into 
-    tv_post_types(name, summary, sort) 
-    select ?, ?, max(sort)+1 from tv_post_types`
+    tv_posts(title, content, sort) 
+    select ?, ?, max(sort)+1 from tv_posts`
     , [name, summary]);
   },
-  update: async (id, name, summary) => {
+  update: async (id, title, content) => {
     await db.query(`
-      update tv_post_types
-      set name = ? ${typeof(summary) === 'string' ? ', summary = ?' : ''}
+      update tv_posts
+      set title = ? , content = ?
       where type_id = ?
-    `, typeof(summary) === 'string' ? [name, summary, id] : [name, summary]);
+    `, [name, content, id]);
   },
   delete: async (id) => {
     if (!id) {
       return null;
     }
     await db.query(`
-      delete from tv_post_types where type_id = ?
+      delete from tv_posts where ID = ?
     `, [id]);
   }
 }
