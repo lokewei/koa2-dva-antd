@@ -120,7 +120,8 @@ const modal = ({
           content="<p>这里插入文章内容</p>"
           config={{
             plugins: 'link image code',
-            language: 'zh_CN'
+            language: 'zh_CN',
+            min_height: 400
           }}
         />
       </Form>
