@@ -76,7 +76,14 @@ router.get('/getFile', async (ctx) => {
     await send(ctx, file, opt);
   } else if (id) {
     const [data] = await ContentImgsModel.getById(id);
-    await send(ctx, data.path, opt);
+    if (data) {
+      await send(ctx, data.path, opt);
+    } else {
+      ctx.body = {
+        success: false,
+        message: '找不到对应的图片'
+      }
+    }
   } else {
     ctx.body = {
       success: false,

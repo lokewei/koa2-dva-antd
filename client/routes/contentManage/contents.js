@@ -3,10 +3,11 @@ import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import { Form, Button, Row, Col,
          Table, Popconfirm,
-         Input, Modal } from 'antd'
+         Input, Modal, Radio } from 'antd'
 import SearchGroup from '../../components/ui/search'
 import styles from './contents.less'
-import TinyMCE from 'react-tinymce';
+import RichEditor from '../../components/RichEditor'
+import _isEmpty from 'lodash/isEmpty'
 
 const FormItem = Form.Item
 
@@ -58,19 +59,23 @@ Search.propTypes = {
 
 const SearchForm = Form.create()(Search);
 
-const modal = ({
-  visible,
-  type,
-  item = {},
-  onOk,
-  onCancel,
-  form: {
-    getFieldDecorator,
-    validateFields,
-    getFieldsValue
+class modal extends React.PureComponent {
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.visible !== nextProps.visible && nextProps.visible === true) {
+      if (_isEmpty(nextProps.item)) {
+        this.props.form.resetFields();
+        this.props.form.setFieldsValue({
+          post_content: '<em>这里编写正文内容...</em>'
+        })
+      } else {
+        this.props.form.setFieldsValue(nextProps.item);
+      }
+    }
   }
-}) => {
-  function handleOk() {
+
+  handleOk() {
+    const { item, onOk, from: { validateFields, getFieldsValue } } = this.props;
     validateFields((errors) => {
       if (errors) {
         return
@@ -83,50 +88,65 @@ const modal = ({
     })
   }
 
-  const modalOpts = {
-    title: `${type === 'create' ? '新建文章' : '修改文章'}`,
-    visible,
-    onOk: handleOk,
-    onCancel,
-    // wrapClassName: 'vertical-center-modal',
-    width: 'calc(100% - 275px)',
-    style: { marginLeft: 255 }
-  }
-
-  const formItemLayout = {
-    labelCol: {
-      span: 4
-    },
-    wrapperCol: {
-      span: 18
+  render() {
+    const {
+      visible,
+      type,
+      item = {},
+      onCancel,
+      form: {
+        getFieldDecorator
+      }
+    } = this.props;
+    const modalOpts = {
+      title: `${type === 'create' ? '新建文章' : '修改文章'}`,
+      visible,
+      onOk: ::this.handleOk,
+      onCancel,
+      // wrapClassName: 'vertical-center-modal',
+      width: 'calc(100% - 275px)',
+      style: { marginLeft: 255 }
     }
-  }
 
-  return (
-    <Modal {...modalOpts}>
-      <Form>
-        <FormItem label="标题：" hasFeedback {...formItemLayout}>
-          {getFieldDecorator('title', {
-            initialValue: item.name,
-            rules: [
-              {
-                required: true,
-                message: '标题未填写'
-              }
-            ]
-          })(<Input />)}
-        </FormItem>
-        <TinyMCE
-          content="<p>这里插入文章内容</p>"
-          config={{
-            plugins: 'link image code',
-            language: 'zh_CN',
-            min_height: 400
-          }}
-        />
-      </Form>
-    </Modal>
-  )
+    const formItemLayout = {
+      labelCol: {
+        span: 2
+      },
+      wrapperCol: {
+        span: 20,
+        offset: 1
+      }
+    }
+
+    return (
+      <Modal {...modalOpts}>
+        <Form>
+          <FormItem label="标 题：" hasFeedback {...formItemLayout}>
+            {getFieldDecorator('post_title', {
+              initialValue: item.post_title,
+              rules: [
+                {
+                  required: true,
+                  message: '标题未填写'
+                }
+              ]
+            })(<Input />)}
+          </FormItem>
+          <FormItem label="内 容：" hasFeedback {...formItemLayout}>
+            {getFieldDecorator('post_content', {
+              initialValue: item.post_content,
+              rules: [
+                {
+                  required: true,
+                  message: '标题未填写'
+                }
+              ]
+            })(<RichEditor />)}
+          </FormItem>
+        </Form>
+      </Modal>
+    )
+  }
 }
 
 modal.propTypes = {
