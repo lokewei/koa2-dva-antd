@@ -33,8 +33,10 @@ router.post('/create', async (ctx) => {
 
 router.post('/update', async (ctx) => {
   const { name, summary } = ctx.req.body;
+  let id = parseInt(ctx.req.body.ID, 10);
+  id = isNaN(id) ? null : id;
   try {
-    await PostModel.update(name, summary);
+    await PostModel.update(id, name, summary);
     ctx.body = {
       success: true
     }
@@ -92,8 +94,10 @@ router.post('/types/create', async (ctx) => {
 
 router.post('/types/update', async (ctx) => {
   const { name, summary } = ctx.req.body;
+  let id = parseInt(ctx.req.body.type_id, 10);
+  id = isNaN(id) ? null : id;
   try {
-    await PostTypesModel.update(name, summary);
+    await PostTypesModel.update(id, name, summary);
     ctx.body = {
       success: true
     }

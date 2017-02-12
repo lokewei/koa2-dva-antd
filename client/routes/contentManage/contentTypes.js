@@ -5,6 +5,7 @@ import { Form, Button, Row, Col,
          Table, Popconfirm,
          Input, Modal } from 'antd'
 import SearchGroup from '../../components/ui/search'
+import _isEmpty from 'lodash/isEmpty'
 
 const FormItem = Form.Item
 
@@ -56,19 +57,20 @@ Search.propTypes = {
 
 const SearchForm = Form.create()(Search);
 
-const modal = ({
-  visible,
-  type,
-  item = {},
-  onOk,
-  onCancel,
-  form: {
-    getFieldDecorator,
-    validateFields,
-    getFieldsValue
+class modal extends React.PureComponent {
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.visible !== nextProps.visible && nextProps.visible === true) {
+      if (_isEmpty(nextProps.item)) {
+        this.props.form.resetFields();
+      } else {
+        this.props.form.setFieldsValue(nextProps.item);
+      }
+    }
   }
-}) => {
-  function handleOk() {
+
+  handleOk() {
+    const { item, onOk, form: { validateFields, getFieldsValue } } = this.props;
     validateFields((errors) => {
       if (errors) {
         return
@@ -81,51 +83,62 @@ const modal = ({
     })
   }
 
-  const modalOpts = {
-    title: `${type === 'create' ? '新建文章分类' : '修改文章分类'}`,
-    visible,
-    onOk: handleOk,
-    onCancel,
-    wrapClassName: 'vertical-center-modal'
-  }
-
-  const formItemLayout = {
-    labelCol: {
-      span: 6
-    },
-    wrapperCol: {
-      span: 14
+  render() {
+    const {
+      visible,
+      type,
+      item = {},
+      onCancel,
+      form: {
+        getFieldDecorator
+      }
+    } = this.props;
+    const modalOpts = {
+      title: `${type === 'create' ? '新建文章分类' : '修改文章分类'}`,
+      visible,
+      onOk: ::this.handleOk,
+      onCancel,
+      wrapClassName: 'vertical-center-modal'
     }
-  }
 
-  return (
-    <Modal {...modalOpts}>
-      <Form>
-        <FormItem label="名称：" hasFeedback {...formItemLayout}>
-          {getFieldDecorator('name', {
-            initialValue: item.name,
-            rules: [
-              {
-                required: true,
-                message: '名称未填写'
-              }
-            ]
-          })(<Input />)}
-        </FormItem>
-        <FormItem label="描述：" hasFeedback {...formItemLayout}>
-          {getFieldDecorator('summary', {
-            initialValue: item.summary,
-            rules: [
-              {
-                required: true,
-                message: '描述未填写'
-              }
-            ]
-          })(<Input type="textarea" />)}
-        </FormItem>
-      </Form>
-    </Modal>
-  )
+    const formItemLayout = {
+      labelCol: {
+        span: 6
+      },
+      wrapperCol: {
+        span: 14
+      }
+    }
+
+    return (
+      <Modal {...modalOpts}>
+        <Form>
+          <FormItem label="名称：" hasFeedback {...formItemLayout}>
+            {getFieldDecorator('name', {
+              initialValue: item.name,
+              rules: [
+                {
+                  required: true,
+                  message: '名称未填写'
+                }
+              ]
+            })(<Input />)}
+          </FormItem>
+          <FormItem label="描述：" hasFeedback {...formItemLayout}>
+            {getFieldDecorator('summary', {
+              initialValue: item.summary,
+              rules: [
+                {
+                  required: true,
+                  message: '描述未填写'
+                }
+              ]
+            })(<Input type="textarea" />)}
+          </FormItem>
+        </Form>
+      </Modal>
+    )
+  }
 }
 
 modal.propTypes = {
