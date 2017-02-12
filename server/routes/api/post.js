@@ -18,9 +18,9 @@ router.get('/list', async (ctx) => {
 });
 
 router.post('/create', async (ctx) => {
-  const { name, summary } = ctx.req.body;
+  const { post_title, post_excerpt, post_type, post_content } = ctx.req.body;
   try {
-    await PostModel.create(name, summary);
+    await PostModel.create(post_title, post_excerpt, post_type, post_content);
     ctx.body = {
       success: true
     }
@@ -32,11 +32,27 @@ router.post('/create', async (ctx) => {
 });
 
 router.post('/update', async (ctx) => {
-  const { name, summary } = ctx.req.body;
-  let id = parseInt(ctx.req.body.ID, 10);
+  const { post_title, post_excerpt, post_type, post_content } = ctx.req.body;
+  let id = parseInt(ctx.req.body.id, 10);
   id = isNaN(id) ? null : id;
   try {
-    await PostModel.update(id, name, summary);
+    await PostModel.update(id, post_title, post_excerpt, post_type, post_content);
+    ctx.body = {
+      success: true
+    }
+  } catch (error) {
+    ctx.body = {
+      success: false
+    }
+  }
+});
+
+router.post('/changeStatus', async (ctx) => {
+  const { post_status } = ctx.req.body;
+  let id = parseInt(ctx.req.body.id, 10);
+  id = isNaN(id) ? null : id;
+  try {
+    await PostModel.changeStatus(id, post_status);
     ctx.body = {
       success: true
     }

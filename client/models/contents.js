@@ -1,9 +1,11 @@
 import { query, create, update, remove } from '../services/contents'
+import { query as queryTypes } from '../services/contentTypes'
 
 export default {
   namespace: 'contentManage/contents',
   state: {
     list: [],
+    types: [],
     loading: false,
     currentItem: {},
     modalVisible: false,
@@ -24,7 +26,10 @@ export default {
           dispatch({
             type: 'query',
             payload: location.query
-          })
+          });
+          dispatch({
+            type: 'queryTypes'
+          });
         }
       })
     }
@@ -44,6 +49,15 @@ export default {
         })
       }
       yield put({ type: 'hideLoading' });
+    },
+    *queryTypes({ payload }, { put, call }) {
+      const data = yield call(queryTypes, payload);
+      if (data) {
+        yield put({
+          type: 'setTypes',
+          payload: data.data
+        })
+      }
     },
     *'delete'({ payload }, { call, put, select }) {
       yield put({ type: 'showLoading' });
@@ -83,8 +97,8 @@ export default {
     *update({ payload }, { select, call, put }) {
       yield put({ type: 'hideModal' })
       yield put({ type: 'showLoading' })
-      const id = yield select((state) => state['contentManage/contents'].currentItem.type_id)
-      const newRecord = { ...payload, type_id: id }
+      const id = yield select((state) => state['contentManage/contents'].currentItem.ID)
+      const newRecord = { ...payload, id }
       const result = yield call(update, newRecord)
       if (result && result.success) {
         const conditions = yield select((state) => state['contentManage/contents'].conditions);
@@ -120,6 +134,9 @@ export default {
     },
     setListDatas(state, action) {
       return { ...state, ...action.payload };
+    },
+    setTypes(state, action) {
+      return { ...state, types: action.payload };
     }
   }
 }

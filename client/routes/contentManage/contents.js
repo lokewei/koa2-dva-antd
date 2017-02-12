@@ -10,6 +10,8 @@ import RichEditor from '../../components/RichEditor'
 import _isEmpty from 'lodash/isEmpty'
 
 const FormItem = Form.Item
+const RadioButton = Radio.Button;
+const RadioGroup = Radio.Group;
 
 const Search = ({
   field,
@@ -22,9 +24,9 @@ const Search = ({
     keyword,
     size: 'large',
     select: true,
-    selectOptions: [{ value: 'name', name: '标题' }],
+    selectOptions: [{ value: 'post_title', name: '标题' }],
     selectProps: {
-      defaultValue: 'name'
+      defaultValue: 'post_title'
     },
     onSearch: (value) => {
       onSearch(value)
@@ -75,7 +77,7 @@ class modal extends React.PureComponent {
   }
 
   handleOk() {
-    const { item, onOk, from: { validateFields, getFieldsValue } } = this.props;
+    const { item, onOk, form: { validateFields, getFieldsValue } } = this.props;
     validateFields((errors) => {
       if (errors) {
         return
@@ -92,6 +94,7 @@ class modal extends React.PureComponent {
     const {
       visible,
       type,
+      types,
       item = {},
       onCancel,
       form: {
@@ -128,6 +131,43 @@ class modal extends React.PureComponent {
                 {
                   required: true,
                   message: '标题未填写'
+                }
+              ]
+            })(<Input />)}
+          </FormItem>
+          <FormItem label="分 类：" hasFeedback {...formItemLayout}>
+            {getFieldDecorator('post_type', {
+              initialValue: item.post_type,
+              rules: [
+                {
+                  required: true,
+                  message: '分类未选择'
+                }
+              ]
+            })(
+              <RadioGroup>
+                {
+                  types.map((record) => {
+                    return (
+                      <RadioButton
+                        key={record.type_id}
+                        value={record.type_id}
+                      >
+                        {record.name}
+                      </RadioButton>
+                    );
+                  })
+                }
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem label="简 介：" hasFeedback {...formItemLayout}>
+            {getFieldDecorator('post_excerpt', {
+              initialValue: item.post_excerpt,
+              rules: [
+                {
+                  required: true,
+                  message: '简介未填写'
                 }
               ]
             })(<Input />)}
@@ -235,11 +275,12 @@ ContentList.propTypes = {
 }
 
 function ContentTypes({ dispatch, contentTypes, location }) {
-  const { loading, list, pagination, currentItem, modalVisible, modalType } = contentTypes;
+  const { loading, list, pagination, currentItem, modalVisible, modalType, types } = contentTypes;
   const { field, keyword } = location.query || {};
   const modalProps = {
     item: modalType === 'create' ? {} : currentItem,
     type: modalType,
+    types,
     visible: modalVisible,
     onOk(data) {
       dispatch({

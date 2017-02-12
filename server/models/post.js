@@ -1,4 +1,5 @@
 import db from '../lib/db';
+import _ from 'lodash'
 
 const buildConditions = (params = {}) => {
   const conditions = [];
@@ -41,19 +42,49 @@ export default {
       }
     }
   },
-  create: async (name, summary) => {
+  create: async (title, excerpt, type, content) => {
+    const now = new Date();
     await db.query(`
     insert into 
-    tv_posts(title, content, sort) 
-    select ?, ?, max(sort)+1 from tv_posts`
-    , [name, summary]);
+    tv_posts(post_title, post_excerpt, post_type, post_content, post_date, post_modified) 
+    values(?, ?, ?, ?, ?, ?)`
+    , [title, excerpt, type, content, now, now]);
   },
-  update: async (id, title, content) => {
+  update: async (id, title, excerpt, type, content) => {
+    const conditions = [];
+    const values = [];
+    if (!_.isEmpty(title)) {
+      conditions.push('post_title = ?');
+      values.push(title);
+    }
+    if (!_.isEmpty(excerpt)) {
+      conditions.push('post_excerpt = ?');
+      values.push(excerpt);
+    }
+    if (!_.isEmpty(type)) {
+      conditions.push('post_type = ?');
+      values.push(type);
+    }
+    if (!_.isEmpty(content)) {
+      conditions.push('post_content = ?');
+      values.push(content);
+    }
+    const updateFields = conditions.length ? `${conditions.join(' , ')}, ` : ''
+    const now = new Date();
+    values.push(now);
+    values.push(id);
     await db.query(`
       update tv_posts
-      set title = ? , content = ?
-      where type_id = ?
-    `, [name, content, id]);
+      set ${updateFields} post_modified = ?
+      where ID = ?
+    `, values);
+  },
+  changeStatus: async (id, status) => {
+    await db.query(`
+      update tv_posts
+      set post_status = ?
+      where ID = ?
+    `, [status, id]);
   },
   delete: async (id) => {
     if (!id) {

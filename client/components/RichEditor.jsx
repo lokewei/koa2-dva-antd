@@ -6,7 +6,6 @@ import _isEqual from 'lodash/isEqual'
 class RichEditor extends React.PureComponent {
 
   shouldComponentUpdate(nextProps, nextState) {
-    console.log(_isEqual(this.props.value, nextProps.value));
     return !!this.editor.initialized
       && (!_isEqual(this.props.config, nextProps.config)
       || !_isEqual(this.props.value, nextProps.value));
