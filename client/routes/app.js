@@ -21,7 +21,8 @@ function App({ children, location, dispatch, app }) {
     siderFold,
     darkTheme,
     isNavbar,
-    menuPopoverVisible
+    menuPopoverVisible,
+    navOpenKeys
   } = app;
   const loginProps = {
     loading,
@@ -39,6 +40,7 @@ function App({ children, location, dispatch, app }) {
     location,
     isNavbar,
     menuPopoverVisible,
+    navOpenKeys,
     switchMenuPopover() {
       dispatch({ type: 'app/switchMenuPopver' })
     },
@@ -47,6 +49,10 @@ function App({ children, location, dispatch, app }) {
     },
     switchSider() {
       dispatch({ type: 'app/switchSider' })
+    },
+    changeOpenKeys(openKeys) {
+      localStorage.setItem('navOpenKeys', JSON.stringify(openKeys))
+      dispatch({ type: 'app/handleNavOpenKeys', payload: { navOpenKeys: openKeys } })
     }
   }
 
@@ -54,8 +60,13 @@ function App({ children, location, dispatch, app }) {
     siderFold,
     darkTheme,
     location,
+    navOpenKeys,
     changeTheme() {
       dispatch({ type: 'app/changeTheme' })
+    },
+    changeOpenKeys(openKeys) {
+      localStorage.setItem('navOpenKeys', JSON.stringify(openKeys))
+      dispatch({ type: 'app/handleNavOpenKeys', payload: { navOpenKeys: openKeys } })
     }
   }
 
