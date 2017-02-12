@@ -3,6 +3,7 @@ import passport from 'koa-passport'
 import UserRouter from './user'
 import ContentImgsRouter from './contentImgs'
 import PostRouter from './post'
+import TravelRouter from './travel'
 
 const router = new Router();
 
@@ -59,5 +60,6 @@ router.get('/status', async(ctx) => {
 router.use('/user', UserRouter.routes(), UserRouter.allowedMethods());
 router.use('/contentImgs', ContentImgsRouter.routes(), ContentImgsRouter.allowedMethods());
 router.use('/post', PostRouter.routes(), PostRouter.allowedMethods());
+router.use('/travel', TravelRouter.routes(), TravelRouter.allowedMethods());
 
 export default router;
