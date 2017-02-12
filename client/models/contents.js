@@ -1,4 +1,4 @@
-import { query, create, update, remove } from '../services/contents'
+import { query, create, update, remove, changeStatus } from '../services/contents'
 import { query as queryTypes } from '../services/contentTypes'
 
 export default {
@@ -113,6 +113,23 @@ export default {
         }
       }
       yield put({ type: 'hideLoading' });
+    },
+    *changeStatus({ payload }, { call, put }) {
+      yield put({ type: 'hideModal' })
+      yield put({ type: 'showLoading' })
+      const params = { ...payload };
+      const result = yield call(changeStatus, params)
+      if (result && result.success) {
+        yield put({
+          type: 'updateRecordField',
+          payload: {
+            id: payload.id,
+            fieldName: 'post_status',
+            fieldValue: payload.status
+          }
+        });
+      }
+      yield put({ type: 'hideLoading' });
     }
   },
   reducers: {
@@ -137,6 +154,15 @@ export default {
     },
     setTypes(state, action) {
       return { ...state, types: action.payload };
+    },
+    updateRecordField(state, action) {
+      const { id, fieldName, fieldValue } = action.payload;
+      state.list.forEach((record) => {
+        if (record.ID === id) {
+          record[fieldName] = fieldValue;
+        }
+      });
+      return { ...state };
     }
   }
 }

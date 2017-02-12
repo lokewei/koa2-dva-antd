@@ -2,11 +2,12 @@ import React, { PropTypes } from 'react'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import { Form, Button, Row, Col,
-         Table, Popconfirm,
-         Input, Modal, Radio } from 'antd'
+         Table, Popconfirm, Icon,
+         Input, Modal, Radio, Switch } from 'antd'
 import SearchGroup from '../../components/ui/search'
 import styles from './contents.less'
 import RichEditor from '../../components/RichEditor'
+import ChooseImg from '../../components/chooseImg'
 import _isEmpty from 'lodash/isEmpty'
 
 const FormItem = Form.Item
@@ -183,6 +184,11 @@ class modal extends React.PureComponent {
               ]
             })(<RichEditor />)}
           </FormItem>
+          <FormItem label="封 面：" hasFeedback {...formItemLayout}>
+            {getFieldDecorator('post_cover', {
+              initialValue: item.post_cover
+            })(<ChooseImg />)}
+          </FormItem>
         </Form>
       </Modal>
     )
@@ -206,7 +212,8 @@ const ContentList = (props) => {
     pagination,
     onPageChange,
     onDeleteItem,
-    onEditItem
+    onEditItem,
+    onChangeStatus
   } = props;
   const columns = [
     {
@@ -237,6 +244,23 @@ const ContentList = (props) => {
       title: '最后修改时间',
       dataIndex: 'post_modified',
       key: 'post_modified'
+    }, {
+      title: '发布',
+      dataIndex: 'post_status',
+      key: 'post_status',
+      render: (text, record) => {
+        const checkedUI = (() => {
+          return (
+            <Switch
+              checkedChildren={<Icon type="check" />}
+              unCheckedChildren={<Icon type="cross" />}
+              checked={text === 'publish'}
+              onChange={(checked) => { onChangeStatus(record.ID, checked) }}
+            />
+          );
+        })();
+        return checkedUI;
+      }
     }, {
       title: '操作',
       key: 'operation',
@@ -322,6 +346,15 @@ function ContentTypes({ dispatch, contentTypes, location }) {
         payload: {
           modalType: 'update',
           currentItem: item
+        }
+      })
+    },
+    onChangeStatus(id, checked) {
+      dispatch({
+        type: 'contentManage/contents/changeStatus',
+        payload: {
+          id,
+          status: checked ? 'publish' : 'draft'
         }
       })
     }

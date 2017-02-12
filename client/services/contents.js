@@ -27,3 +27,10 @@ export async function remove(id) {
     data: { id }
   })
 }
+
+export async function changeStatus(params) {
+  return await request('/api/post/changeStatus', {
+    method: 'post',
+    data: params
+  })
+}

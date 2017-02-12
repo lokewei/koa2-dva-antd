@@ -48,11 +48,11 @@ router.post('/update', async (ctx) => {
 });
 
 router.post('/changeStatus', async (ctx) => {
-  const { post_status } = ctx.req.body;
+  const { status } = ctx.req.body;
   let id = parseInt(ctx.req.body.id, 10);
   id = isNaN(id) ? null : id;
   try {
-    await PostModel.changeStatus(id, post_status);
+    await PostModel.changeStatus(id, status);
     ctx.body = {
       success: true
     }
