@@ -46,6 +46,8 @@ module.exports = function (webpackConfig, env) {
     }
   })
 
+  console.dir(webpackConfig.module.loaders);
+
   // add resolve root fold
   webpackConfig.resolve.root = [
     path.resolve('./client'),

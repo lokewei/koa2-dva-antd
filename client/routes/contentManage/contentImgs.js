@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'dva'
 import { Upload, Button, Input, Icon, Checkbox, Tooltip, Spin, message } from 'antd'
 import classnames from 'classnames'
-import styles from './contentImgs.less'
+import styles from '../../components/commons.less'
 import Message from '../../components/message'
 import PopConfirm from '../../components/popconfirm'
 
