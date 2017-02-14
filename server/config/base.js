@@ -46,6 +46,9 @@ export default function middleware(app) {
         await next();
     });
     app.use(mount("/", convert(Serve(__dirname + '/../public/'))));
+    if (process.env.NODE_ENV === 'production') {
+      app.use(mount("/chunks", convert(Serve(__dirname + '/../public/client/chunks'))));
+    }
 
     app.keys = ['tailv-session-key'];
     app.use(convert(session({

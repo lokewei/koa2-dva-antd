@@ -13,7 +13,7 @@ module.exports = function (webpackConfig, env) {
     webpackConfig.devtool = '#eval'
     webpackConfig.babel.plugins.push(['dva-hmr', {
       entries: [
-        './src/index.js'
+        './client/index.js'
       ]
     }])
   } else {
@@ -53,6 +53,7 @@ module.exports = function (webpackConfig, env) {
   ];
 
   // change output path to backend server
+  webpackConfig.output.chunkFilename = 'chunks/[name]_[chunkhash:8].js';
   webpackConfig.output.path = path.join(__dirname, 'server/public/client');
 
   return webpackConfig

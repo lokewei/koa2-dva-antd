@@ -7,6 +7,7 @@ export default function checkauth() {
          || ctx.path.indexOf('/auth/') >= 0
          || ctx.path.indexOf('/api/') >= 0
          || ctx.path.indexOf('/open/') >= 0
+         || ctx.path.indexOf('/chunks/') >= 0
          || ctx.path==='/'
          || ctx.path.indexOf('.html') >= 0) {
             await next()
