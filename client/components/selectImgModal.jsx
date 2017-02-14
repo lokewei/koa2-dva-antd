@@ -1,19 +1,19 @@
 import React, { PropTypes } from 'react'
-import { Modal, Input, Icon, Spin, Button } from 'antd'
+import { Modal, Input, Icon, Spin, Button, Upload, message } from 'antd'
 import PopConfirm from './popconfirm'
 import classnames from 'classnames'
 import styles from './commons.less'
-import { query, groupList, delImgItem } from '../services/contentImgs'
+import { query, groupList } from '../services/contentImgs'
 
 const ImgItem = (props) => {
-  const { checked } = props;
+  const { ID, checked, handleCheck } = props;
   const classes = classnames({
     [styles.img_item_bd]: true,
     [styles.selected]: checked === true
   });
   return (
     <li className={styles.img_item}>
-      <div className={classes}>
+      <div className={classes} onClick={() => { handleCheck(ID) }}>
         <span
           className={styles.pic_box}
           style={{ backgroundImage: `url(api/contentImgs/getFile?file=${props.path})` }}
@@ -50,7 +50,7 @@ class SelectImgModal extends React.Component {
       groupData: [],
       checkedImgs: {},
       selectCount: 0,
-      current: 0
+      currentGroup: 0
     };
   }
 
@@ -75,7 +75,21 @@ class SelectImgModal extends React.Component {
   }
 
   handleSwitch(id) {
-    //
+    this.setState({
+      loading: true,
+      currentGroup: id
+    });
+    query({ groupId: id }).then((result) => {
+      this.setState({
+        loading: false,
+        imgData: result.data
+      });
+    }).catch((error) => {
+      this.setState({
+        loading: false
+      });
+      console.error(error);
+    });
   }
 
   render() {
@@ -88,16 +102,83 @@ class SelectImgModal extends React.Component {
       ];
     }
 
-    const { checkedImgs } = this.state;
+    const { checkedImgs, currentGroup } = this.state;
 
     const imgItemProps = {
       // 单选一个图片元素
-      handleCheck(ID, checked) {
-        const cimgs = this.state.checkedImgs;
-        checkedImgs[ID] = checked;
-        this.setState({
-          checkedImgs: cimgs
-        });
+      handleCheck: (() => {
+        const workFn = (ID) => {
+          const cimgs = this.state.checkedImgs;
+          const canSelectCount = this.props.canSelectCount;
+          const multiMode = canSelectCount > 1;
+          let curTotal = 0;
+          const preCheck = cimgs[ID];
+          for (const key in cimgs) {
+            if (cimgs.hasOwnProperty(key)
+                && cimgs[key] === true) {
+              if (multiMode) {
+                curTotal++
+              } else {
+                cimgs[key] = false;
+              }
+            }
+          }
+
+          /**
+           * 多选模式满后只能取消后选择
+           * 单选模式带自动取消功能 (全部false后，再选当前)
+           */
+          if (multiMode) {
+            if (cimgs[ID] === true) {
+              curTotal--
+            }
+            if (curTotal < canSelectCount) {
+              cimgs[ID] = !cimgs[ID];
+              curTotal++;
+            }
+          } else {
+            cimgs[ID] = !preCheck;
+            if (cimgs[ID]) {
+              curTotal = 1;
+            } else {
+              curTotal = 0;
+            }
+          }
+          this.setState({
+            checkedImgs: cimgs,
+            selectCount: curTotal
+          });
+        }
+        return workFn.bind(this);
+      })()
+    }
+
+    const uploadProps = {
+      name: 'file',
+      action: '/api/contentImgs/upload',
+      accept: 'image/bmp,image/png,image/jpeg,image/jpg,image/gif',
+      data: { groupId: currentGroup > 0 ? currentGroup : null },
+      showUploadList: false,
+      onChange(info) {
+        if (info.file.status === 'uploading') {
+          this.setState({
+            loading: true
+          })
+        }
+        if (info.file.status !== 'uploading') {
+          console.log(info.file, info.fileList);
+        }
+        if (info.file.status === 'done') {
+          message.success(`${info.file.name} 文件上传成功`);
+          this.setState({
+            loading: false
+          })
+        } else if (info.file.status === 'error') {
+          message.error(`${info.file.name} 文件上传失败`);
+          this.setState({
+            loading: false
+          })
+        }
       }
     }
 
@@ -117,7 +198,7 @@ class SelectImgModal extends React.Component {
                       this.state.groupData.map((record) => {
                         const className = classnames({
                           [styles.inner_menu_item]: true,
-                          [styles.selected]: this.state.current === record.ID
+                          [styles.selected]: this.state.currentGroup === record.ID
                         });
                         const handleClick = () => {
                           this.handleSwitch(record.ID);
@@ -147,7 +228,11 @@ class SelectImgModal extends React.Component {
             </div>
             <div className={styles.inner_main}>
               <div className={classnames(styles.sub_title_bar, styles.in_dialog)}>
-                <Button type="primary">上传tup</Button>
+                <Upload {...uploadProps}>
+                  <Button type="primary">
+                    <Icon type="upload" /> 上传图片
+                  </Button>
+                </Upload>
               </div>
               <div className={styles.img_pick_area_inner}>
                 <div className={styles.img_pick}>

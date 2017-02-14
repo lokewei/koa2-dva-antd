@@ -68,8 +68,10 @@
       border: 1px solid #e7e7eb;
       float: left;
       text-align: center;
+      list-style-type: none;
       .img_item_bd {
         position: relative;
+        cursor: pointer;
         .pic {
           width: 169px;
           height: 169px;
@@ -89,6 +91,13 @@
           border-bottom: 1px solid #e7e7eb;
         }
         &.selected {
+          .selected_mask {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+          }
           .selected_mask_inner {
             width: 118px;
             height: 118px;
@@ -102,7 +111,7 @@
             position: absolute;
             top: 0;
             left: 0;
-            background: transparent url("url-loader?./icon_card_selected.png") no-repeat 0 0;
+            background: transparent url("../components/icon_card_selected.png") no-repeat 0 0;
             width: 117px;
             height: 117px;
             vertical-align: middle;
