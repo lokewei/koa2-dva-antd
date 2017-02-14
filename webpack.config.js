@@ -53,7 +53,7 @@ module.exports = function (webpackConfig, env) {
   ];
 
   // change output path to backend server
-  webpackConfig.output.path = path.join(__dirname, 'src/public/client');
+  webpackConfig.output.path = path.join(__dirname, 'server/public/client');
 
   return webpackConfig
 }
