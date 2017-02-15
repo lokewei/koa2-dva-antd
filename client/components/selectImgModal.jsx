@@ -79,6 +79,10 @@ class SelectImgModal extends React.Component {
       loading: true,
       currentGroup: id
     });
+    this.reloadImgData(id);
+  }
+
+  reloadImgData(id) {
     query({ groupId: id }).then((result) => {
       this.setState({
         loading: false,
@@ -159,7 +163,8 @@ class SelectImgModal extends React.Component {
       accept: 'image/bmp,image/png,image/jpeg,image/jpg,image/gif',
       data: { groupId: currentGroup > 0 ? currentGroup : null },
       showUploadList: false,
-      onChange(info) {
+      /* eslint-disable no-extra-bind */
+      onChange: ((info) => {
         if (info.file.status === 'uploading') {
           this.setState({
             loading: true
@@ -170,6 +175,7 @@ class SelectImgModal extends React.Component {
         }
         if (info.file.status === 'done') {
           message.success(`${info.file.name} 文件上传成功`);
+          this.reloadImgData(currentGroup);
           this.setState({
             loading: false
           })
@@ -179,6 +185,20 @@ class SelectImgModal extends React.Component {
             loading: false
           })
         }
+      }).bind(this)
+      /* eslint-enable no-extra-bind */
+    }
+
+    const handleOk = () => {
+      if (this.props.onOk) {
+        const { checkedImgs: cimgs, imgData } = this.state;
+        const checkedImgRecords = [];
+        imgData.forEach((record) => {
+          if (cimgs[record.ID] === true) {
+            checkedImgRecords.push(record);
+          }
+        });
+        this.props.onOk(checkedImgRecords);
       }
     }
 
@@ -187,6 +207,7 @@ class SelectImgModal extends React.Component {
         title="选择图片"
         wrapClassName={styles.img_pick_modal}
         {...this.props}
+        onOk={handleOk.bind(this)}
       >
         <Spin spinning={this.state.loading}>
           <div className={classnames(styles.img_pick_panel, styles.cell_layout)}>
@@ -228,11 +249,13 @@ class SelectImgModal extends React.Component {
             </div>
             <div className={styles.inner_main}>
               <div className={classnames(styles.sub_title_bar, styles.in_dialog)}>
-                <Upload {...uploadProps}>
-                  <Button type="primary">
-                    <Icon type="upload" /> 上传图片
-                  </Button>
-                </Upload>
+                <div className={styles.title_extra}>
+                  <Upload {...uploadProps}>
+                    <Button type="primary">
+                      <Icon type="upload" /> 上传图片
+                    </Button>
+                  </Upload>
+                </div>
               </div>
               <div className={styles.img_pick_area_inner}>
                 <div className={styles.img_pick}>

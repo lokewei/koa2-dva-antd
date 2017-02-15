@@ -3,12 +3,13 @@ import { Icon } from 'antd'
 import styles from './chooseImg.less'
 import SelectImgModal from './selectImgModal'
 
-class ChooseImg extends React.Component {
+class ChooseImg extends React.PureComponent {
 
   constructor() {
     super();
     this.state = {
-      visible: false
+      visible: false,
+      currentImg: null
     };
   }
 
@@ -16,14 +17,20 @@ class ChooseImg extends React.Component {
     this.setState({
       visible: true
     });
-    if (this.props.onChange) {
-      // this.props.onChange(/*image id*/);
-    }
   }
 
-  handleOk() {
+  handleOk(checkedImgs) {
     this.setState({
       visible: false
+    });
+    const one = checkedImgs[0];
+    if (this.props.onChange) {
+      if (one && one.ID !== this.props.value) {
+        this.props.onChange(one.ID);
+      }
+    }
+    this.setState({
+      currentImg: one
     });
   }
 
@@ -35,11 +42,13 @@ class ChooseImg extends React.Component {
 
   render() {
     const { value } = this.props;
+    const { currentImg } = this.state;
     const imageUrl = `api/contentImgs/getFile?id=${value}`;
+    const showValue = !value && !!currentImg ? currentImg.ID : value;
     return (
       <div className={styles['avatar-uploader']} onClick={::this.handleClick}>
         {
-          value > 0 ?
+          showValue > 0 ?
             <span
               style={{ backgroundImage: `url("${imageUrl}")` }}
               alt=""

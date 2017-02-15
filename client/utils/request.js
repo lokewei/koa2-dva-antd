@@ -1,4 +1,5 @@
-const Ajax = require('robe-ajax')
+import { message } from 'antd'
+import Ajax from 'robe-ajax'
 
 /**
  * Requests a URL, returning a promise.
@@ -12,7 +13,7 @@ export default function request (url, options) {
     return Ajax.getJSON('http://query.yahooapis.com/v1/public/yql', {
       q: "select * from json where url='" + url + '?' + Ajax.param(options.data) + "'",
       format: 'json'
-    })
+    });
   } else {
     const param = options.data ? Ajax.param(options.data) : {};
     return Ajax.ajax({
@@ -22,8 +23,11 @@ export default function request (url, options) {
       data: param,
       processData: options.method === 'get',
       dataType: 'JSON'
-    }).done((data) => {
+    }).then((data) => {
       return data
-    })
+    }, (resp) => {
+      // console.error(resp)
+      message.error(`请求出错! 请重试 或 通知系统管理员 [${resp.status}]`);
+    });
   }
 }

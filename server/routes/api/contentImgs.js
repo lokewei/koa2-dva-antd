@@ -99,7 +99,7 @@ router.post('/delImgItem', async (ctx) => {
     const [file] = await ContentImgsModel.getById(id);
     if (file) {
       const stablePath = path.join(rootPath, file.path);
-      if (stablePath !== rootPath) {
+      if (stablePath !== rootPath && fs.existsSync(stablePath)) {
         await fs.unlinkSync(stablePath);
       }
       await ContentImgsModel.delete(id);
