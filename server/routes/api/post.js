@@ -3,6 +3,15 @@ import PostModel from '../../models/post';
 import PostTypesModel from '../../models/postTypes';
 
 const router = new Router();
+const postClasses = [
+  'article',
+  'destination',
+  'scenic',
+  'restaurant',
+  'hotel',
+  'shopping',
+  'feature'
+];
 
 router.get('/list', async (ctx) => {
   const { page = 1, pageSize = 10, ...params } = ctx.query;
@@ -19,12 +28,23 @@ router.get('/list', async (ctx) => {
 
 router.post('/create', async (ctx) => {
   const { post_title, post_excerpt, post_type, post_content } = ctx.req.body;
+  const cls = ctx.req.body.class || 'article';
+  let postCover = parseInt(ctx.req.body.pose_cover, 10);
+  postCover = isNaN(postCover) ? null : postCover;
   try {
-    await PostModel.create(post_title, post_excerpt, post_type, post_content);
-    ctx.body = {
-      success: true
+    if (postClasses.indexOf(cls) > -1) {
+      await PostModel.create(post_title, post_excerpt, post_type, post_content, postCover, cls);
+      ctx.body = {
+        success: true
+      }
+    } else {
+      ctx.body = {
+        success: false,
+        message: 'class invalid!'
+      }
     }
   } catch (error) {
+    console.log(error);
     ctx.body = {
       success: false
     }
@@ -32,11 +52,11 @@ router.post('/create', async (ctx) => {
 });
 
 router.post('/update', async (ctx) => {
-  const { post_title, post_excerpt, post_type, post_content } = ctx.req.body;
+  const { post_title, post_excerpt, post_type, post_content, post_cover } = ctx.req.body;
   let id = parseInt(ctx.req.body.id, 10);
   id = isNaN(id) ? null : id;
   try {
-    await PostModel.update(id, post_title, post_excerpt, post_type, post_content);
+    await PostModel.update(id, post_title, post_excerpt, post_type, post_content, post_cover);
     ctx.body = {
       success: true
     }

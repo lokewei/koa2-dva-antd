@@ -18,8 +18,17 @@ class RichEditor extends React.PureComponent {
 
   handleEditorChange = (e) => {
     const content = e.target.getContent();
-    if (this.props.onChange) {
-      this.props.onChange(content);
+    const { onChange } = this.props;
+    if (onChange) {
+      onChange(content);
+    }
+  }
+
+  handleEditorBlur = (e) => {
+    const content = e.target.getContent();
+    const { onBlur } = this.props;
+    if (onBlur) {
+      onBlur(content);
     }
   }
 
@@ -33,6 +42,7 @@ class RichEditor extends React.PureComponent {
         min_height: document.body.clientHeight - 450
       }}
       onChange={::this.handleEditorChange}
+      onBlur={::this.handleEditorBlur}
     />);
   }
 }

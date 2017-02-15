@@ -174,15 +174,18 @@ class modal extends React.PureComponent {
             })(<Input />)}
           </FormItem>
           <FormItem label="内 容：" hasFeedback {...formItemLayout}>
-            {getFieldDecorator('post_content', {
+            <RichEditor />
+            {/*getFieldDecorator('post_content', {
               initialValue: item.post_content,
+              trigger: 'onBlur',
+              validateTrigger: 'onBlur',
               rules: [
                 {
                   required: true,
-                  message: '标题未填写'
+                  message: '内容未填写'
                 }
               ]
-            })(<RichEditor />)}
+            })(<RichEditor />)*/}
           </FormItem>
           <FormItem label="封 面：" hasFeedback {...formItemLayout}>
             {getFieldDecorator('post_cover', {

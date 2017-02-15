@@ -29,9 +29,6 @@ class ChooseImg extends React.PureComponent {
         this.props.onChange(one.ID);
       }
     }
-    this.setState({
-      currentImg: one
-    });
   }
 
   handleCancel() {
@@ -42,13 +39,11 @@ class ChooseImg extends React.PureComponent {
 
   render() {
     const { value } = this.props;
-    const { currentImg } = this.state;
-    const imageUrl = `api/contentImgs/getFile?id=${value}`;
-    const showValue = !value && !!currentImg ? currentImg.ID : value;
+    const imageUrl = value > 0 ? `api/contentImgs/getFile?id=${value}` : '';
     return (
       <div className={styles['avatar-uploader']} onClick={::this.handleClick}>
         {
-          showValue > 0 ?
+          value > 0 ?
             <span
               style={{ backgroundImage: `url("${imageUrl}")` }}
               alt=""

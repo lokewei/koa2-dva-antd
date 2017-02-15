@@ -42,15 +42,22 @@ export default {
       }
     }
   },
-  create: async (title, excerpt, type, content) => {
+  create: async (title, excerpt, type, content, cover, cls) => {
     const now = new Date();
+    const values = [title, excerpt, type, content]
+    if (!!cover) {
+      values.push(cover);
+    }
+    values.push(cls);
+    values.push(now);
+    values.push(now);
     await db.query(`
     insert into 
-    tv_posts(post_title, post_excerpt, post_type, post_content, post_date, post_modified) 
-    values(?, ?, ?, ?, ?, ?)`
-    , [title, excerpt, type, content, now, now]);
+    tv_posts(post_title, post_excerpt, post_type, post_content, ${!!cover ? 'post_cover, ' : ''} post_class, post_date, post_modified)
+    values(?, ?, ?, ?, ${!!cover ? ', ' : ''} ?, ?, ?)`
+    , values);
   },
-  update: async (id, title, excerpt, type, content) => {
+  update: async (id, title, excerpt, type, content, cover) => {
     const conditions = [];
     const values = [];
     if (!_.isEmpty(title)) {
@@ -68,6 +75,10 @@ export default {
     if (!_.isEmpty(content)) {
       conditions.push('post_content = ?');
       values.push(content);
+    }
+    if (!_.isEmpty(cover)) {
+      conditions.push('post_cover = ?');
+      values.push(cover);
     }
     const updateFields = conditions.length ? `${conditions.join(' , ')}, ` : ''
     const now = new Date();
