@@ -1,5 +1,6 @@
 import { query, create, update, remove, changeStatus } from '../services/contents'
 import { query as queryTypes } from '../services/contentTypes'
+import pathToRegexp from 'path-to-regexp'
 
 export default {
   namespace: 'contentManage/contents',
@@ -10,6 +11,7 @@ export default {
     currentItem: {},
     modalVisible: false,
     modalType: 'create',
+    className: 'article',
     conditions: {},
     pagination: {
       showSizeChanger: true,
@@ -22,7 +24,23 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       history.listen(location => {
+        const match = pathToRegexp('/dest/:moduleName').exec(location.pathname);
+        if (match) {
+          const moduleName = match[1];
+          dispatch(({
+            type: 'changeClassName',
+            payload: moduleName
+          }));
+          dispatch({
+            type: 'query',
+            payload: location.query
+          });
+        }
         if (location.pathname === '/contentManage/contents') {
+          dispatch(({
+            type: 'changeClassName',
+            payload: 'article'
+          }));
           dispatch({
             type: 'query',
             payload: location.query
@@ -31,14 +49,15 @@ export default {
             type: 'queryTypes'
           });
         }
-      })
+      });
     }
   },
   effects: {
-    *query({ payload }, { put, call }) {
+    *query({ payload }, { put, call, select }) {
       yield put({ type: 'showLoading' });
       yield put({ type: 'setConditions', payload });
-      const data = yield call(query, payload);
+      const className = yield select((state) => state['contentManage/contents'].className);
+      const data = yield call(query, { ...payload, post_class: className });
       if (data) {
         yield put({
           type: 'setListDatas',
@@ -79,7 +98,8 @@ export default {
     *create({ payload }, { call, put, select }) {
       yield put({ type: 'hideModal' })
       yield put({ type: 'showLoading' })
-      const result = yield call(create, payload)
+      const className = yield select((state) => state['contentManage/contents'].className);
+      const result = yield call(create, { ...payload, post_class: className })
       if (result && result.success) {
         const conditions = yield select((state) => state['contentManage/contents'].conditions);
         const data = yield call(query, conditions);
@@ -147,7 +167,10 @@ export default {
     },
     setConditions(state, action) {
       const { payload: conditions } = action;
-      return { ...state, conditions };
+      return { ...state, conditions: { post_class: state.className, ...conditions } };
+    },
+    changeClassName(state, action) {
+      return { ...state, className: action.payload }
     },
     setListDatas(state, action) {
       return { ...state, ...action.payload };

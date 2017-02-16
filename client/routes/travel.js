@@ -1,65 +1,39 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
-import { Form, Button, Row, Col,
+import { Form, Row, Col,
          Table, Popconfirm, Icon,
          Input, Modal, Radio, Switch } from 'antd'
-import SearchGroup from '../../components/ui/search'
-import styles from './contents.less'
-import RichEditor from '../../components/RichEditor'
-import ChooseImg from '../../components/chooseImg'
+import SearchGroup from '../components/ui/search';
 import _isEmpty from 'lodash/isEmpty'
 
 const FormItem = Form.Item
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
-const classMap = {
-  article: { title: '标题', title2: '标 题', titleAdd: '新建文章', titleModify: '修改文章' },
-  destination: { title: '目的地', title2: '目的地', titleAdd: '新建目的地', titleModify: '修改目的地' },
-  scenic: { title: '景点', title2: '景 点', titleAdd: '新建景点', titleModify: '修改景点' },
-  restaurant: { title: '餐厅', title2: '餐 厅', titleAdd: '新建餐厅', titleModify: '修改餐厅' },
-  hotel: { title: '酒店', title2: '酒 店', titleAdd: '新建酒店', titleModify: '修改酒店' },
-  shopping: { title: '商店', title2: '商 店', titleAdd: '新建商店', titleModify: '修改商店' },
-  feature: { title: '特色服务', title2: '特色服务', titleAdd: '新建特色服务', titleModify: '修改特色服务' },
-  other: { title: '其他', title2: '其 他', titleAdd: '新建其他', titleModify: '修改其他' }
-};
 
 const Search = ({
   field,
   keyword,
-  onSearch,
-  onAdd,
-  className
+  onSearch
 }) => {
   const searchGroupProps = {
     field,
     keyword,
     size: 'large',
     select: true,
-    selectOptions: [{ value: 'post_title', name: classMap[className].title }],
+    selectOptions: [{ value: 'dest', name: '目的地' }],
     selectProps: {
-      defaultValue: 'post_title'
+      defaultValue: 'dest'
     },
     onSearch: (value) => {
       onSearch(value)
     }
   }
 
-  console.log(className);
-
   return (
     <Row gutter={24}>
       <Col lg={8} md={12} sm={16} xs={24} style={{ marginBottom: 16 }}>
         <SearchGroup {...searchGroupProps} />
-      </Col>
-      <Col
-        lg={{ offset: 8, span: 8 }}
-        md={12}
-        sm={8}
-        xs={24}
-        style={{ marginBottom: 16, textAlign: 'right' }}
-      >
-        <Button size="large" type="ghost" onClick={onAdd}>添加</Button>
       </Col>
     </Row>
   )
@@ -68,12 +42,9 @@ const Search = ({
 Search.propTypes = {
   form: PropTypes.object.isRequired,
   onSearch: PropTypes.func,
-  onAdd: PropTypes.func,
   field: PropTypes.string,
   keyword: PropTypes.string
 }
-
-const SearchForm = Form.create()(Search);
 
 class modal extends React.PureComponent {
 
@@ -109,16 +80,14 @@ class modal extends React.PureComponent {
       visible,
       type,
       types,
-      className,
       item = {},
       onCancel,
       form: {
         getFieldDecorator
       }
     } = this.props;
-    const titleProps = classMap[className];
     const modalOpts = {
-      title: `${type === 'create' ? titleProps.titleAdd : titleProps.titleModify}`,
+      title: `${type === 'create' ? '新建文章' : '修改文章'}`,
       visible,
       onOk: ::this.handleOk,
       onCancel,
@@ -140,7 +109,7 @@ class modal extends React.PureComponent {
     return (
       <Modal {...modalOpts}>
         <Form>
-          <FormItem label={titleProps.title2} hasFeedback {...formItemLayout}>
+          <FormItem label="标 题：" hasFeedback {...formItemLayout}>
             {getFieldDecorator('post_title', {
               initialValue: item.post_title,
               rules: [
@@ -151,38 +120,32 @@ class modal extends React.PureComponent {
               ]
             })(<Input />)}
           </FormItem>
-          {
-            className === 'article'
-            ?
-              <FormItem label="分 类：" hasFeedback {...formItemLayout}>
-                {getFieldDecorator('post_type', {
-                  initialValue: item.post_type,
-                  rules: [
-                    {
-                      required: true,
-                      message: '分类未选择'
-                    }
-                  ]
-                })(
-                  <RadioGroup>
-                    {
-                      types.map((record) => {
-                        return (
-                          <RadioButton
-                            key={record.type_id}
-                            value={record.type_id}
-                          >
-                            {record.name}
-                          </RadioButton>
-                        );
-                      })
-                    }
-                  </RadioGroup>
-                )}
-              </FormItem>
-            :
-              <div>不是文章</div>
-          }
+          <FormItem label="分 类：" hasFeedback {...formItemLayout}>
+            {getFieldDecorator('post_type', {
+              initialValue: item.post_type,
+              rules: [
+                {
+                  required: true,
+                  message: '分类未选择'
+                }
+              ]
+            })(
+              <RadioGroup>
+                {
+                  types.map((record) => {
+                    return (
+                      <RadioButton
+                        key={record.type_id}
+                        value={record.type_id}
+                      >
+                        {record.name}
+                      </RadioButton>
+                    );
+                  })
+                }
+              </RadioGroup>
+            )}
+          </FormItem>
           <FormItem label="简 介：" hasFeedback {...formItemLayout}>
             {getFieldDecorator('post_excerpt', {
               initialValue: item.post_excerpt,
@@ -193,25 +156,6 @@ class modal extends React.PureComponent {
                 }
               ]
             })(<Input />)}
-          </FormItem>
-          <FormItem label="内 容：" hasFeedback {...formItemLayout}>
-            <RichEditor />
-            {/*getFieldDecorator('post_content', {
-              initialValue: item.post_content,
-              trigger: 'onBlur',
-              validateTrigger: 'onBlur',
-              rules: [
-                {
-                  required: true,
-                  message: '内容未填写'
-                }
-              ]
-            })(<RichEditor />)*/}
-          </FormItem>
-          <FormItem label="封 面：" hasFeedback {...formItemLayout}>
-            {getFieldDecorator('post_cover', {
-              initialValue: item.post_cover
-            })(<ChooseImg />)}
           </FormItem>
         </Form>
       </Modal>
@@ -229,6 +173,8 @@ modal.propTypes = {
 
 const EditModal = Form.create()(modal);
 
+const SearchForm = Form.create()(Search);
+
 const ContentList = (props) => {
   const {
     loading,
@@ -237,50 +183,32 @@ const ContentList = (props) => {
     onPageChange,
     onDeleteItem,
     onEditItem,
-    onChangeStatus,
-    className
+    onChangeStatus
   } = props;
-  const titleProps = classMap[className];
   const columns = [
     {
-      title: '封面',
-      dataIndex: 'post_cover',
-      key: 'post_cover',
-      width: 100,
-      render: (fileId) => {
-        if (fileId > 0) {
-          return (
-            <span
-              className={styles.pic}
-              style={{ backgroundImage: `url("api/contentImgs/getFile?id=${fileId}")` }}
-            />);
-        } else {
-          return <span className={styles.pic} />
-        }
-      }
-    }, {
-      title: titleProps.title,
-      dataIndex: 'post_title',
-      key: 'post_title'
+      title: '目的地',
+      dataIndex: 'dest_name',
+      key: 'dest_name'
     }, {
       title: '创建时间',
-      dataIndex: 'post_date',
-      key: 'post_date'
+      dataIndex: 'create_date',
+      key: 'create_date'
     }, {
       title: '最后修改时间',
-      dataIndex: 'post_modified',
-      key: 'post_modified'
+      dataIndex: 'last_modified',
+      key: 'last_modified'
     }, {
-      title: '发布',
-      dataIndex: 'post_status',
-      key: 'post_status',
+      title: '状态',
+      dataIndex: 'travel_status',
+      key: 'travel_status',
       render: (text, record) => {
         const checkedUI = (() => {
           return (
             <Switch
               checkedChildren={<Icon type="check" />}
               unCheckedChildren={<Icon type="cross" />}
-              checked={text === 'publish'}
+              checked={text === 'submit'}
               onChange={(checked) => { onChangeStatus(record.ID, checked) }}
             />
           );
@@ -324,16 +252,14 @@ ContentList.propTypes = {
   pagination: PropTypes.any
 }
 
-function Contents({ dispatch, contents, location }) {
-  const { loading, list, pagination, currentItem,
-    modalVisible, modalType, types, className } = contents;
+function Travel({ dispatch, travel, location }) {
+  const { loading, list, pagination, currentItem, modalVisible, modalType, types } = travel;
   const { field, keyword } = location.query || {};
   const modalProps = {
     item: modalType === 'create' ? {} : currentItem,
     type: modalType,
     types,
     visible: modalVisible,
-    className,
     onOk(data) {
       dispatch({
         type: `contentManage/contents/${modalType}`,
@@ -351,7 +277,6 @@ function Contents({ dispatch, contents, location }) {
     dataSource: list,
     loading,
     pagination,
-    className,
     onPageChange(page) {
       const query = location.query;
       dispatch(routerRedux.push({
@@ -392,7 +317,6 @@ function Contents({ dispatch, contents, location }) {
   const searchProps = {
     field,
     keyword,
-    className,
     onSearch(fieldsValue) {
       !!fieldsValue.keyword.length ?
       dispatch(routerRedux.push({
@@ -405,14 +329,6 @@ function Contents({ dispatch, contents, location }) {
       dispatch(routerRedux.push({
         pathname: '/contentManage/contents'
       }));
-    },
-    onAdd() {
-      dispatch({
-        type: 'contentManage/contents/showModal',
-        payload: {
-          modalType: 'create'
-        }
-      })
     }
   }
   return (
@@ -424,15 +340,15 @@ function Contents({ dispatch, contents, location }) {
   )
 }
 
-Contents.propTypes = {
-  contents: PropTypes.object,
+Travel.propTypes = {
+  travel: PropTypes.object,
   dispatch: PropTypes.func
 }
 
 const mapStateToProps = (state) => {
   return {
-    contents: state['contentManage/contents']
+    travel: state.travel
   };
 }
 
-export default connect(mapStateToProps)(Contents);
+export default connect(mapStateToProps)(Travel);

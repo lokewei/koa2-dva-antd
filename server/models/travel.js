@@ -45,10 +45,15 @@ export default {
 
   create: async (dest, travelDate, travelDays, adultNo, childrenNo, name, phoneNumber, remarks, status) => {
     const now = new Date();
+    const fromRecord = await db.query('select post_title from tv_posts where ID = ?', [dest]);
+    if (fromRecord.length < 0) {
+      return null;
+    }
     await db.query(`
       insert into
       tv_travel(
         dest,
+        dest_name,
         travel_date,
         travel_days,
         adult_no,
@@ -59,8 +64,8 @@ export default {
         travel_status,
         create_date
       )
-      values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    , [travelDate, travelDays, adultNo, childrenNo, name, phoneNumber, remarks, status, now]);
+      values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    , [travelDate, fromRecord[0].post_title, travelDays, adultNo, childrenNo, name, phoneNumber, remarks, status, now]);
   },
 
   update: async (id, params) => {

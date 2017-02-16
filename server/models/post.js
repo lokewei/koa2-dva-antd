@@ -11,6 +11,11 @@ const buildConditions = (params = {}) => {
     values.push(`%${params.keyword}%`);
   }
 
+  if (!_.isEmpty(params.post_class)) {
+    conditions.push('post_class = ?');
+    values.push(params.post_class);
+  }
+
   return {
     where: conditions.length ?
              conditions.join(' AND ') : '1=1',

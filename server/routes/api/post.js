@@ -10,7 +10,8 @@ const postClasses = [
   'restaurant',
   'hotel',
   'shopping',
-  'feature'
+  'feature',
+  'other'
 ];
 
 router.get('/list', async (ctx) => {

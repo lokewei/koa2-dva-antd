@@ -31,37 +31,37 @@ module.exports = [
     clickable: false,
     child: [
       {
-        key: 'envList',
+        key: 'destination',
         name: '目的地管理'
       },
       {
-        key: 'envLand',
+        key: 'scenic',
         name: '景点'
       },
       {
-        key: 'envFB',
+        key: 'restaurant',
         name: '餐厅'
       },
       {
-        key: 'envHotel',
+        key: 'hotel',
         name: '酒店'
       },
       {
-        key: 'envShop',
+        key: 'shopping',
         name: '商城'
       },
       {
-        key: 'envFeature',
+        key: 'feature',
         name: '特色服务'
       },
       {
-        key: 'envOther',
+        key: 'other',
         name: '其他'
       }
     ]
   },
   {
-    key: 'plan',
+    key: 'travel',
     name: '旅行计划',
     icon: 'rocket'
   }

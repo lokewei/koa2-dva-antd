@@ -62,6 +62,24 @@ export default function ({ history, app }) {
             })
           }
         }, {
+          path: 'dest/:moduleName',
+          name: 'dest/:moduleName',
+          getComponent(nextState, cb) {
+            require.ensure([], require => {
+              registerModel(app, require('./models/contents'));
+              cb(null, require('./routes/contentManage/contents'))
+            })
+          }
+        }, {
+          path: 'travel',
+          name: 'travel',
+          getComponent(nextState, cb) {
+            require.ensure([], require => {
+              registerModel(app, require('./models/travel'));
+              cb(null, require('./routes/travel'))
+            })
+          }
+        }, {
           path: 'users',
           name: 'users',
           getComponent(nextState, cb) {
@@ -69,22 +87,6 @@ export default function ({ history, app }) {
               registerModel(app, require('./models/users'));
               // app.model(require('./models/users'))
               cb(null, require('./routes/users'))
-            })
-          }
-        }, {
-          path: 'ui/ico',
-          name: 'ui/ico',
-          getComponent(nextState, cb) {
-            require.ensure([], require => {
-              cb(null, require('./routes/ui/ico'))
-            })
-          }
-        }, {
-          path: 'ui/search',
-          name: 'ui/search',
-          getComponent(nextState, cb) {
-            require.ensure([], require => {
-              cb(null, require('./routes/ui/search'))
             })
           }
         }, {
