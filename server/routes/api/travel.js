@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import TravelModel from '../../models/post';
+import TravelModel from '../../models/travel';
 
 const router = new Router();
 
@@ -17,9 +17,29 @@ router.get('/list', async (ctx) => {
 });
 
 router.post('/create', async (ctx) => {
-  const { post_title, post_excerpt, post_type, post_content } = ctx.req.body;
+  const {
+    dest,
+    travel_date,
+    travel_days,
+    adult_no,
+    children_no,
+    name,
+    phone_number,
+    remarks,
+    travel_status
+  } = ctx.req.body;
   try {
-    await TravelModel.create(post_title, post_excerpt, post_type, post_content);
+    await TravelModel.create(
+      dest,
+      travel_date,
+      travel_days,
+      adult_no,
+      children_no,
+      name,
+      phone_number,
+      remarks,
+      travel_status
+    );
     ctx.body = {
       success: true
     }
@@ -31,11 +51,10 @@ router.post('/create', async (ctx) => {
 });
 
 router.post('/update', async (ctx) => {
-  const { post_title, post_excerpt, post_type, post_content } = ctx.req.body;
   let id = parseInt(ctx.req.body.id, 10);
   id = isNaN(id) ? null : id;
   try {
-    await TravelModel.update(id, post_title, post_excerpt, post_type, post_content);
+    await TravelModel.update(id, ctx.req.body);
     ctx.body = {
       success: true
     }

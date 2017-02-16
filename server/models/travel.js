@@ -42,15 +42,30 @@ export default {
       }
     }
   },
-  create: async (dest, travelDate, travelDays, adultNo, childrenNo, name, phoneNumber, remarks) => {
+
+  create: async (dest, travelDate, travelDays, adultNo, childrenNo, name, phoneNumber, remarks, status) => {
     const now = new Date();
     await db.query(`
-    insert into 
-    tv_travel(dest, post_excerpt, post_type, post_content, post_date, post_modified) 
-    values(?, ?, ?, ?, ?, ?)`
-    , [travelDate, travelDays, adultNo, childrenNo, name, phoneNumber, remarks, now, now]);
+      insert into
+      tv_travel(
+        dest,
+        travel_date,
+        travel_days,
+        adult_no,
+        children_no,
+        name,
+        phone_number,
+        remarks,
+        travel_status,
+        create_date
+      )
+      values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    , [travelDate, travelDays, adultNo, childrenNo, name, phoneNumber, remarks, status, now]);
   },
-  update: async (id, dest, travelDate, travelDays, adultNo, childrenNo, name, phoneNumber, remarks) => {
+
+  update: async (id, params) => {
+    const { dest, travelDate, travelDays, adultNo,
+      childrenNo, name, phoneNumber, remarks, status } = params;
     const conditions = [];
     const values = [];
     if (!_.isEmpty(dest)) {
@@ -85,6 +100,10 @@ export default {
       conditions.push('remarks = ?');
       values.push(remarks);
     }
+    if (!_.isEmpty(status)) {
+      conditions.push('travel_status = ?');
+      values.push(status);
+    }
     const updateFields = conditions.length ? `${conditions.join(' , ')}, ` : ''
     const now = new Date();
     values.push(now);
@@ -95,6 +114,7 @@ export default {
       where ID = ?
     `, values);
   },
+
   changeStatus: async (id, status) => {
     await db.query(`
       update tv_travel
@@ -102,6 +122,7 @@ export default {
       where ID = ?
     `, [status, id]);
   },
+
   delete: async (id) => {
     if (!id) {
       return null;
@@ -110,4 +131,5 @@ export default {
       delete from tv_travel where ID = ?
     `, [id]);
   }
+
 }
