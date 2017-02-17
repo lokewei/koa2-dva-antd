@@ -45,8 +45,6 @@ const Search = ({
     }
   }
 
-  console.log(className);
-
   return (
     <Row gutter={24}>
       <Col lg={8} md={12} sm={16} xs={24} style={{ marginBottom: 16 }}>
@@ -79,11 +77,12 @@ class modal extends React.PureComponent {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.visible !== nextProps.visible && nextProps.visible === true) {
+      console.log(nextProps.item);
       if (_isEmpty(nextProps.item)) {
         this.props.form.resetFields();
-        this.props.form.setFieldsValue({
+        /*this.props.form.setFieldsValue({
           post_content: '<em>这里编写正文内容...</em>'
-        })
+        })*/
       } else {
         this.props.form.setFieldsValue(nextProps.item);
       }
@@ -181,7 +180,7 @@ class modal extends React.PureComponent {
                 )}
               </FormItem>
             :
-              <div>不是文章</div>
+              <noscript></noscript>
           }
           <FormItem label="简 介：" hasFeedback {...formItemLayout}>
             {getFieldDecorator('post_excerpt', {
@@ -195,18 +194,15 @@ class modal extends React.PureComponent {
             })(<Input />)}
           </FormItem>
           <FormItem label="内 容：" hasFeedback {...formItemLayout}>
-            <RichEditor />
-            {/*getFieldDecorator('post_content', {
+            {getFieldDecorator('post_content', {
               initialValue: item.post_content,
-              trigger: 'onBlur',
-              validateTrigger: 'onBlur',
               rules: [
                 {
                   required: true,
                   message: '内容未填写'
                 }
               ]
-            })(<RichEditor />)*/}
+            })(<RichEditor />)}
           </FormItem>
           <FormItem label="封 面：" hasFeedback {...formItemLayout}>
             {getFieldDecorator('post_cover', {

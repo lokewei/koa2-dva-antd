@@ -29,8 +29,8 @@ router.get('/list', async (ctx) => {
 
 router.post('/create', async (ctx) => {
   const { post_title, post_excerpt, post_type, post_content } = ctx.req.body;
-  const cls = ctx.req.body.class || 'article';
-  let postCover = parseInt(ctx.req.body.pose_cover, 10);
+  const cls = ctx.req.body.post_class || 'article';
+  let postCover = parseInt(ctx.req.body.post_cover, 10);
   postCover = isNaN(postCover) ? null : postCover;
   try {
     if (postClasses.indexOf(cls) > -1) {

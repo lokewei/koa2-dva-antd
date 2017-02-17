@@ -1,0 +1,36 @@
+@charset "UTF-8";html,body{font-family:Helvetica,"microsoft yahei";/*background:#f8f8f8;*/font-size:10px}
+body{position:relative;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+html,body,div,ul,ol,li,dl,dt,dd,h1,h2,h3,h4,h5,h6,pre,form,p,blockquote,fieldset,input,abbr,article,aside,command,details,figcaption,figure,footer,header,hgroup,mark,meter,nav,output,progress,section,summary,time,button{margin:0;padding:0}
+h1,h2,h3,h4,h5,h6,pre,code,address,caption,cite,code,em,strong,th,figcaption{font-weight:normal;font-style:normal}
+ul,li,dl,dt,dd{list-style:none}
+fieldset,iframe,img{border:0}
+table{border-collapse:collapse;border-spacing:0}
+article,aside,footer,header,hgroup,nav,section,figure,figcaption,video{display:block}
+a{text-decoration:none;color:#333;outline:0}
+input,select{outline:0;border:0}
+input[type="text"]{background-position-y:-1px}
+i,cite,em,var,address{font-style:normal}
+a:active{outline:0}
+*{-webkit-tap-highlight-color:rgba(255,0,0,0)}
+b,strong{font-weight:bold}
+.clearfix:after{display:block;clear:both;content:"";visibility:hidden;height:0}
+.clearfix{zoom:1}
+@media screen and (max-device-width:320px){body{-webkit-text-size-adjust:none}
+}
+@media screen and (max-device-width:480px){body{-webkit-text-size-adjust:none}
+}
+@media only screen and (-webkit-min-device-pixel-ratio:2){body{-webkit-text-size-adjust:none}
+}
+@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{-webkit-text-size-adjust:none}
+}
+
+.text-nowrap{white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+input::-webkit-input-placeholder{color:#999}
+ .recommend-content .recommend-list .recommend-list-item .recommend-item-img .recommend-item-text,{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
+
+
+/*文章内页样式*/
+
+.rich-media-content {position: relative;overflow: hidden;color: #3e3e3e;}
+.rich-media-content p{color:#3e3e3e;box-sizing: border-box;word-wrap: break-word;text-align: left; font-size:1.4rem; line-height:1.9rem; clear:both; margin-bottom:10px}
+.rich-media-content p img { position: relative; top:0; left:0; width:100%; height:auto}
