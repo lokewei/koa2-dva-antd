@@ -51,7 +51,6 @@ class RichEditor extends React.PureComponent {
   }
 
   openChooseImg() {
-    console.log(111);
     this.setState({
       chooseImgVisible: true
     })
@@ -62,7 +61,9 @@ class RichEditor extends React.PureComponent {
       chooseImgVisible: false
     });
     const one = checkedImgs[0];
-    console.log(checkedImgs);
+    if (one) {
+      this.editor.insertContent(`<img src='${one.path}' />`);
+    }
   }
 
   cancelChooseImg() {

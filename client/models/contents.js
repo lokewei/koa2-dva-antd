@@ -10,6 +10,7 @@ export default {
     loading: false,
     currentItem: {},
     modalVisible: false,
+    confirmLoading: false,
     modalType: 'create',
     className: 'article',
     conditions: {},
@@ -96,10 +97,10 @@ export default {
       yield put({ type: 'hideLoading' });
     },
     *create({ payload }, { call, put, select }) {
-      yield put({ type: 'hideModal' })
+      yield put({ type: 'showConfirmLoading' });
       yield put({ type: 'showLoading' })
       const className = yield select((state) => state['contentManage/contents'].className);
-      const result = yield call(create, { ...payload, post_class: className })
+      const result = yield call(create, { ...payload, post_class: className });
       if (result && result.success) {
         const conditions = yield select((state) => state['contentManage/contents'].conditions);
         const data = yield call(query, conditions);
@@ -112,6 +113,8 @@ export default {
           })
         }
       }
+      yield put({ type: 'hideModal' });
+      yield put({ type: 'hideConfirmLoading' });
       yield put({ type: 'hideLoading' });
     },
     *update({ payload }, { select, call, put }) {
@@ -164,6 +167,12 @@ export default {
     },
     hideModal(state) {
       return { ...state, modalVisible: false }
+    },
+    showConfirmLoading(state) {
+      return { ...state, confirmLoading: true }
+    },
+    hideConfirmLoading(state) {
+      return { ...state, confirmLoading: false }
     },
     setConditions(state, action) {
       const { payload: conditions } = action;

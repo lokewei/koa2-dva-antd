@@ -77,7 +77,6 @@ class modal extends React.PureComponent {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.visible !== nextProps.visible && nextProps.visible === true) {
-      console.log(nextProps.item);
       if (_isEmpty(nextProps.item)) {
         this.props.form.resetFields();
         /*this.props.form.setFieldsValue({
@@ -111,6 +110,8 @@ class modal extends React.PureComponent {
       className,
       item = {},
       onCancel,
+      maskClosable,
+      confirmLoading,
       form: {
         getFieldDecorator
       }
@@ -123,7 +124,9 @@ class modal extends React.PureComponent {
       onCancel,
       // wrapClassName: 'vertical-center-modal',
       width: 'calc(100% - 275px)',
-      style: { marginLeft: 255 }
+      style: { marginLeft: 255 },
+      maskClosable,
+      confirmLoading
     }
 
     const formItemLayout = {
@@ -321,7 +324,7 @@ ContentList.propTypes = {
 }
 
 function Contents({ dispatch, contents, location }) {
-  const { loading, list, pagination, currentItem,
+  const { loading, confirmLoading, list, pagination, currentItem,
     modalVisible, modalType, types, className } = contents;
   const { field, keyword } = location.query || {};
   const modalProps = {
@@ -330,6 +333,8 @@ function Contents({ dispatch, contents, location }) {
     types,
     visible: modalVisible,
     className,
+    confirmLoading,
+    maskClosable: false,
     onOk(data) {
       dispatch({
         type: `contentManage/contents/${modalType}`,
@@ -337,8 +342,14 @@ function Contents({ dispatch, contents, location }) {
       })
     },
     onCancel() {
-      dispatch({
-        type: 'contentManage/contents/hideModal'
+      Modal.confirm({
+        title: '退出编辑',
+        content: '确认退出内容编辑吗？',
+        onOk: () => {
+          dispatch({
+            type: 'contentManage/contents/hideModal'
+          })
+        }
       })
     }
   }

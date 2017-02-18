@@ -8,7 +8,7 @@ import Logger from 'koa-logger';
 import mount from 'koa-mount';
 import bodyParser from 'koa-bodyparser';
 import session from 'koa-generic-session';
-import mysqlStore from 'koa-mysql-session';
+import mysqlStore from './koa-mysql-session';
 import views from 'koa-views';
 import proxy from 'koa-proxy';
 import config from './config'
