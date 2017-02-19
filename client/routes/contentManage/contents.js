@@ -3,16 +3,19 @@ import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import { Form, Button, Row, Col,
          Table, Popconfirm, Icon,
-         Input, Modal, Radio, Switch } from 'antd'
+         Input, Modal, Radio, Switch,
+         Affix } from 'antd'
 import SearchGroup from '../../components/ui/search'
 import styles from './contents.less'
 import RichEditor from '../../components/RichEditor'
 import ChooseImg from '../../components/chooseImg'
 import _isEmpty from 'lodash/isEmpty'
+import Signal from 'signals'
 
-const FormItem = Form.Item
+const FormItem = Form.Item;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
+const submitSignal = new Signal();
 const classMap = {
   article: { title: '标题', title2: '标 题', titleAdd: '新建文章', titleModify: '修改文章' },
   destination: { title: '目的地', title2: '目的地', titleAdd: '新建目的地', titleModify: '修改目的地' },
@@ -75,6 +78,10 @@ const SearchForm = Form.create()(Search);
 
 class modal extends React.PureComponent {
 
+  componentDidMount() {
+    submitSignal.add(this.handleOk.bind(this));
+  }
+
   componentWillReceiveProps(nextProps) {
     if (this.props.visible !== nextProps.visible && nextProps.visible === true) {
       if (_isEmpty(nextProps.item)) {
@@ -123,10 +130,11 @@ class modal extends React.PureComponent {
       onOk: ::this.handleOk,
       onCancel,
       // wrapClassName: 'vertical-center-modal',
-      width: 'calc(100% - 275px)',
-      style: { marginLeft: 255 },
+      width: 'calc(100% - 225px)',
+      style: { marginLeft: 225, top: 0 },
       maskClosable,
-      confirmLoading
+      confirmLoading,
+      footer: null
     }
 
     const formItemLayout = {
@@ -333,13 +341,13 @@ function Contents({ dispatch, contents, location }) {
     types,
     visible: modalVisible,
     className,
-    confirmLoading,
+    // confirmLoading,
     maskClosable: false,
     onOk(data) {
       dispatch({
         type: `contentManage/contents/${modalType}`,
         payload: data
-      })
+      });
     },
     onCancel() {
       Modal.confirm({
@@ -427,6 +435,15 @@ function Contents({ dispatch, contents, location }) {
       <SearchForm {...searchProps} />
       <ContentList {...listProps} />
       <EditModal {...modalProps} />
+      <div className={styles.tool_area_wrp} style={{ display: modalVisible ? 'block' : 'none' }}>
+        <Button
+          size="large"
+          type="primary"
+          onClick={() => { submitSignal.dispatch() }}
+          loading={confirmLoading}
+        > 保存 </Button>
+        <Button size="large" type="ghost" onClick={modalProps.onCancel}> 取消 </Button>
+      </div>
     </div>
   )
 }

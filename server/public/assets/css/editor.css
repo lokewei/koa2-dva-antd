@@ -1,6 +1,6 @@
 @charset "UTF-8";html,body{font-family:Helvetica,"microsoft yahei";/*background:#f8f8f8;*/font-size:10px}
-body{position:relative;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 html,body,div,ul,ol,li,dl,dt,dd,h1,h2,h3,h4,h5,h6,pre,form,p,blockquote,fieldset,input,abbr,article,aside,command,details,figcaption,figure,footer,header,hgroup,mark,meter,nav,output,progress,section,summary,time,button{margin:0;padding:0}
+body{position:relative;overflow-x:hidden;-webkit-overflow-scrolling:touch;margin: 0;padding: 8px 90px !important;}
 h1,h2,h3,h4,h5,h6,pre,code,address,caption,cite,code,em,strong,th,figcaption{font-weight:normal;font-style:normal}
 ul,li,dl,dt,dd{list-style:none}
 fieldset,iframe,img{border:0}
