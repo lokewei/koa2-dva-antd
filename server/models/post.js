@@ -34,7 +34,7 @@ export default {
     const totalResult = await db.query(`select count(1) as total from tv_posts where ${conditions.where}`, conditions.values);
     const total = totalResult[0].total;
     const pageNum = Math.ceil(total / pageSize);
-    const data = await db.query(`select * from tv_posts where ${conditions.where} LIMIT ${limit}`, conditions.values);
+    const data = await db.query(`select * from tv_posts where ${conditions.where} order by post_date desc LIMIT ${limit}`, conditions.values);
     if (page > pageNum) {
       return null;
     }
@@ -46,6 +46,24 @@ export default {
         total
       }
     }
+  },
+  /**
+   * 查各组最新的一条组成头条轮播
+   */
+  getTops: async() => {
+    return await db.query(`
+      select
+        t.post_title,
+        t.post_excerpt,
+        t.post_cover,
+        t.post_date,
+        t.post_type,
+        t1.name as type_name
+      from (select * from tv_posts where post_status='publish' order by post_date desc) t
+      left join tv_post_types t1
+      on t.post_type = t1.type_id
+      group by t.post_type
+    `);
   },
   create: async (title, excerpt, type, content, cover, cls) => {
     const now = new Date();
@@ -59,7 +77,7 @@ export default {
     await db.query(`
     insert into 
     tv_posts(post_title, post_excerpt, post_type, post_content, ${!!cover ? 'post_cover, ' : ''} post_class, post_date, post_modified)
-    values(?, ?, ?, ?, ${!!cover ? ', ' : ''} ?, ?, ?)`
+    values(?, ?, ?, ?, ${!!cover ? '?, ' : ''} ?, ?, ?)`
     , values);
   },
   update: async (id, title, excerpt, type, content, cover) => {

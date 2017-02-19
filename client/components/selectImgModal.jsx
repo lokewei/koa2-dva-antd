@@ -175,6 +175,7 @@ class SelectImgModal extends React.Component {
         if (info.file.status === 'done') {
           message.success(`${info.file.name} 文件上传成功`);
           this.reloadImgData(currentGroup);
+          this.reloadGroupList();
           this.setState({
             loading: false
           })
@@ -281,6 +282,16 @@ class SelectImgModal extends React.Component {
       this.setState({
         loading: false
       });
+      console.error(error);
+    });
+  }
+
+  reloadGroupList() {
+    groupList().then((result) => {
+      this.setState({
+        groupData: result.data
+      })
+    }).catch((error) => {
       console.error(error);
     });
   }

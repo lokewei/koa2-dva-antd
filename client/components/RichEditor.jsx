@@ -13,8 +13,12 @@ class RichEditor extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.value !== nextProps.value && _isEmpty(nextProps.value)) {
-      this.setContent('');
+    if (this.props.value !== nextProps.value) {
+      if (_isEmpty(nextProps.value)) {
+        this.setContent('')
+      } else {
+        this.setContent(nextProps.value);
+      }
     }
   }
 
@@ -31,7 +35,11 @@ class RichEditor extends React.PureComponent {
 
   setContent(text = '') {
     if (this.editor) {
-      this.editor.setContent(text);
+      const curText = this.editor.getContent().trim();
+      const tarText = text.trim();
+      if (curText !== tarText) {
+        this.editor.setContent(text);
+      }
     }
   }
 

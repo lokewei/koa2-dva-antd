@@ -11,6 +11,9 @@ npm-debug.log*
 # uploads
 uploads
 
+# mobile
+mobile
+
 # Runtime data
 pids
 *.pid

@@ -33,10 +33,22 @@ export default function middleware(app) {
     app.use(cors({ credentials: true }));
     app.use(convert(Logger()))
     if (process.env.NODE_ENV === 'development') {
+      app.use(async (ctx, next) => {
+        if (ctx.path === '/m') {
+            ctx.status = 302;
+            ctx.redirect('/m/');
+            ctx.body = 'redirect m to m/';
+        } else {
+            await next();
+        }
+      });
+      app.use(mount("/m", convert(Serve(__dirname + '/../../mobile/'))));
       app.use(convert(proxy({
         host: 'http://localhost:8000',
         match: /^(?!\/assets).+\.(js|css)/
       })));
+
+
     }
     app.use(bodyParser());
     app.use(async (ctx, next) => {
