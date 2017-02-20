@@ -8,6 +8,7 @@ const plugins = [
   'placeholder',
   'variable',
   'noneditable',
+  'autoresize'
 ];
 
 const fonts = [
@@ -86,7 +87,7 @@ export default {
     'assets/css/editor.css'
   ],
   body_class: 'rich-media-content',
-  toolbar1: 'preview undo redo | fontselect fontsizeselect | bold italic underline strikethrough removeformat | forecolor backcolor | link | emoticons chooseImgs',
+  toolbar1: 'preview undo redo | fontselect fontsizeselect | bold italic underline strikethrough removeformat | forecolor backcolor | link | emoticons chooseImgs fullscreen',
   toolbar2: 'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table hr inserttime',
   /*uploadConfig: {
     inputName: 'imageUploadInput',
@@ -99,4 +100,5 @@ export default {
     },
   },*/
   wordcount_countregex: /[^\x00-\xff]+/g,
+  autoresize_min_height: 400
 };

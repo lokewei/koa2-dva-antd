@@ -84,6 +84,20 @@ router.post('/changeStatus', async (ctx) => {
   }
 });
 
+router.get('/getTops', async (ctx) => {
+  try {
+    const data = await PostModel.getTops();
+    ctx.body = {
+      success: true,
+      data
+    }
+  } catch (error) {
+    ctx.body = {
+      success: false
+    }
+  }
+});
+
 router.post('/delete', async (ctx) => {
   const id = parseInt(ctx.req.body.id, 10);
   try {

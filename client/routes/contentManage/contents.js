@@ -3,16 +3,20 @@ import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import { Form, Button, Row, Col,
          Table, Popconfirm, Icon,
-         Input, Modal, Radio, Switch } from 'antd'
+         Input, Modal, Radio, Switch,
+         Tag } from 'antd'
 import SearchGroup from '../../components/ui/search'
 import styles from './contents.less'
 import RichEditor from '../../components/RichEditor'
 import ChooseImg from '../../components/chooseImg'
+import TagColors from '../../components/tagColors'
 import _isEmpty from 'lodash/isEmpty'
+import Signal from 'signals'
 
-const FormItem = Form.Item
+const FormItem = Form.Item;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
+const submitSignal = new Signal();
 const classMap = {
   article: { title: '标题', title2: '标 题', titleAdd: '新建文章', titleModify: '修改文章' },
   destination: { title: '目的地', title2: '目的地', titleAdd: '新建目的地', titleModify: '修改目的地' },
@@ -29,14 +33,16 @@ const Search = ({
   keyword,
   onSearch,
   onAdd,
+  types,
   className
 }) => {
+  const searchOptions = [{ value: 'post_title', name: classMap[className].title }];
   const searchGroupProps = {
     field,
     keyword,
     size: 'large',
     select: true,
-    selectOptions: [{ value: 'post_title', name: classMap[className].title }],
+    selectOptions: searchOptions,
     selectProps: {
       defaultValue: 'post_title'
     },
@@ -59,6 +65,30 @@ const Search = ({
       >
         <Button size="large" type="ghost" onClick={onAdd}>添加</Button>
       </Col>
+      {
+        /*<Col span={24} style={{ marginBottom: 16 }}> 先不做了
+          <RadioGroup>
+            <RadioButton
+              key="all"
+              value=""
+            >
+              全部分类
+            </RadioButton>
+            {
+              types.map((record) => {
+                return (
+                  <RadioButton
+                    key={record.type_id}
+                    value={record.type_id}
+                  >
+                    {record.name}
+                  </RadioButton>
+                );
+              })
+            }
+          </RadioGroup>
+        </Col>*/
+      }
     </Row>
   )
 }
@@ -74,6 +104,10 @@ Search.propTypes = {
 const SearchForm = Form.create()(Search);
 
 class modal extends React.PureComponent {
+
+  componentDidMount() {
+    submitSignal.add(this.handleOk.bind(this));
+  }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.visible !== nextProps.visible && nextProps.visible === true) {
@@ -123,10 +157,12 @@ class modal extends React.PureComponent {
       onOk: ::this.handleOk,
       onCancel,
       // wrapClassName: 'vertical-center-modal',
-      width: 'calc(100% - 275px)',
-      style: { marginLeft: 255 },
+      wrapClassName: 'content-editor',
+      width: 'calc(100% - 225px)',
+      style: { marginLeft: 225, top: 0 },
       maskClosable,
-      confirmLoading
+      confirmLoading,
+      footer: null
     }
 
     const formItemLayout = {
@@ -237,6 +273,7 @@ const ContentList = (props) => {
     onDeleteItem,
     onEditItem,
     onChangeStatus,
+    types,
     className
   } = props;
   const titleProps = classMap[className];
@@ -255,6 +292,22 @@ const ContentList = (props) => {
             />);
         } else {
           return <span className={styles.pic} />
+        }
+      }
+    }, {
+      title: '分类',
+      dataIndex: 'post_type',
+      key: 'post_type',
+      render: (typeId) => {
+        const type = types.find((item) => {
+          return item.type_id === typeId;
+        });
+        if (type) {
+          const tagIdx = typeId % 16;
+          const color = TagColors[tagIdx];
+          return <Tag color={color}>{type.name}</Tag>;
+        } else {
+          return typeId;
         }
       }
     }, {
@@ -333,13 +386,13 @@ function Contents({ dispatch, contents, location }) {
     types,
     visible: modalVisible,
     className,
-    confirmLoading,
+    // confirmLoading,
     maskClosable: false,
     onOk(data) {
       dispatch({
         type: `contentManage/contents/${modalType}`,
         payload: data
-      })
+      });
     },
     onCancel() {
       Modal.confirm({
@@ -359,6 +412,7 @@ function Contents({ dispatch, contents, location }) {
     loading,
     pagination,
     className,
+    types,
     onPageChange(page) {
       const query = location.query;
       dispatch(routerRedux.push({
@@ -399,6 +453,7 @@ function Contents({ dispatch, contents, location }) {
   const searchProps = {
     field,
     keyword,
+    types,
     className,
     onSearch(fieldsValue) {
       !!fieldsValue.keyword.length ?
@@ -427,6 +482,15 @@ function Contents({ dispatch, contents, location }) {
       <SearchForm {...searchProps} />
       <ContentList {...listProps} />
       <EditModal {...modalProps} />
+      <div className={styles.tool_area_wrp} style={{ display: modalVisible ? 'block' : 'none' }}>
+        <Button
+          size="large"
+          type="primary"
+          onClick={() => { submitSignal.dispatch() }}
+          loading={confirmLoading}
+        > 保存 </Button>
+        <Button size="large" type="ghost" onClick={modalProps.onCancel}> 取消 </Button>
+      </div>
     </div>
   )
 }
