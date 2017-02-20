@@ -6,7 +6,7 @@
   "scripts": {
     "client": "dora --plugins \"webpack,webpack-hmr\"",
     "server": "nodemon --debug start.js",
-    "start": "cross-env NODE_ENV=production atool-build && pm2 start ecosystem.config.js",
+    "start": "cross-env NODE_ENV=production atool-build && pm2 restart ecosystem.config.js",
     "dev": "dora --plugins \"webpack,webpack-hmr\" | nodemon start.js",
     "build": "atool-build",
     "test": "mocha --compilers js:babel-core/register --require babel-polyfill",

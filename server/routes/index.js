@@ -11,8 +11,8 @@ import RouterOpen from './open';
 import RouterMock from './mock';
 
 const router = process.env.NODE_ENV === 'production'
-                ? new Router()
-                : new Router({ prefix: '/tv-admin' });
+                ? new Router({ prefix: '/tv-admin' })
+                : new Router();
 
 
 router.get('/', async (ctx, next) => {
