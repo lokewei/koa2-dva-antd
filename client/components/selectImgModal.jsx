@@ -158,7 +158,7 @@ class SelectImgModal extends React.Component {
 
     const uploadProps = {
       name: 'file',
-      action: '/api/contentImgs/upload',
+      action: './api/contentImgs/upload',
       accept: 'image/bmp,image/png,image/jpeg,image/jpg,image/gif',
       data: { groupId: currentGroup > 0 ? currentGroup : null },
       showUploadList: false,
