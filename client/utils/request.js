@@ -8,7 +8,7 @@ import Ajax from 'robe-ajax'
  * @param  {object} [options] The options we want to pass to "fetch"
  * @return {object}           An object containing either "data" or "err"
  */
-export default function request (url, options) {
+export default function request(url, options) {
   if (options.cross) {
     return Ajax.getJSON('http://query.yahooapis.com/v1/public/yql', {
       q: "select * from json where url='" + url + '?' + Ajax.param(options.data) + "'",
@@ -16,8 +16,9 @@ export default function request (url, options) {
     });
   } else {
     const param = options.data ? Ajax.param(options.data) : {};
+    const prefix = '.';
     return Ajax.ajax({
-      url,
+      url: `${prefix}${url}`,
       method: options.method || 'get',
       // contentType: 'application/json; charset=utf-8',
       data: param,
