@@ -10,7 +10,9 @@ import RouterAuth from './auth';
 import RouterOpen from './open';
 import RouterMock from './mock';
 
-const router = new Router();
+const router = process.env.NODE_ENV === 'production'
+                ? new Router()
+                : new Router({ prefix: '/tv-admin' });
 
 
 router.get('/', async (ctx, next) => {

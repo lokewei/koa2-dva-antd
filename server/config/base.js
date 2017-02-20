@@ -47,6 +47,7 @@ export default function middleware(app) {
     });
     app.use(mount("/", convert(Serve(__dirname + '/../public/'))));
     if (process.env.NODE_ENV === 'production') {
+      app.use(mount("/tv-admin", convert(Serve(__dirname + '/../public/'))));
       app.use(mount("/chunks", convert(Serve(__dirname + '/../public/client/chunks'))));
     }
 
