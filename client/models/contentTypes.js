@@ -1,4 +1,4 @@
-import { query, create, update, remove } from '../services/contentTypes'
+import { query, create, update, remove, changeShowType } from '../services/contentTypes'
 
 export default {
   namespace: 'contentManage/contentTypes',
@@ -99,6 +99,23 @@ export default {
         }
       }
       yield put({ type: 'hideLoading' });
+    },
+    *changeShowType({ payload }, { call, put }) {
+      yield put({ type: 'hideModal' })
+      yield put({ type: 'showLoading' })
+      const params = { ...payload };
+      const result = yield call(changeShowType, params)
+      if (result && result.success) {
+        yield put({
+          type: 'updateRecordField',
+          payload: {
+            typeId: payload.typeId,
+            fieldName: 'show_type',
+            fieldValue: payload.showType
+          }
+        });
+      }
+      yield put({ type: 'hideLoading' });
     }
   },
   reducers: {
@@ -120,6 +137,15 @@ export default {
     },
     setListDatas(state, action) {
       return { ...state, ...action.payload };
+    },
+    updateRecordField(state, action) {
+      const { typeId, fieldName, fieldValue } = action.payload;
+      state.list.forEach((record) => {
+        if (record.type_id === typeId) {
+          record[fieldName] = fieldValue;
+        }
+      });
+      return { ...state };
     }
   }
 }

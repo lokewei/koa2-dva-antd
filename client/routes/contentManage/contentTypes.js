@@ -2,8 +2,8 @@ import React, { PropTypes } from 'react'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import { Form, Button, Row, Col,
-         Table, Popconfirm,
-         Input, Modal } from 'antd'
+         Table, Popconfirm, Icon,
+         Input, Modal, Switch, Tooltip } from 'antd'
 import SearchGroup from '../../components/ui/search'
 import _isEmpty from 'lodash/isEmpty'
 
@@ -158,7 +158,8 @@ const ContentList = (props) => {
     pagination,
     onPageChange,
     onDeleteItem,
-    onEditItem
+    onEditItem,
+    onChangeShowType
   } = props;
   const columns = [
     {
@@ -170,9 +171,27 @@ const ContentList = (props) => {
       dataIndex: 'summary',
       key: 'summary'
     }, {
-      title: '',
-      dataIndex: 'nickName',
-      key: 'nickName'
+      title: '列表模式',
+      dataIndex: 'show_type',
+      key: 'show_type',
+      width: 80,
+      render: (text, record) => {
+        const checkedUI = (() => {
+          const nowChecked = text === 1;
+          const tipText = nowChecked ? '小图模式：显示该分组最新几条；' : '大图模式：显示该分组最新一条;'
+          return (
+            <Tooltip title={tipText} placement="left">
+              <Switch
+                checkedChildren={<Icon type="check" />}
+                unCheckedChildren={<Icon type="cross" />}
+                checked={nowChecked}
+                onChange={(checked) => { onChangeShowType(record.type_id, checked) }}
+              />
+            </Tooltip>
+          );
+        })();
+        return checkedUI;
+      }
     }, {
       title: '操作',
       key: 'operation',
@@ -257,6 +276,15 @@ function ContentTypes({ dispatch, contentTypes, location }) {
         payload: {
           modalType: 'update',
           currentItem: item
+        }
+      })
+    },
+    onChangeShowType(typeId, checked) {
+      dispatch({
+        type: 'contentManage/contentTypes/changeShowType',
+        payload: {
+          typeId,
+          showType: checked ? 1 : 0
         }
       })
     }

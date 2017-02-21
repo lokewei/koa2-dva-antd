@@ -177,4 +177,26 @@ router.post('/types/delete', async (ctx) => {
   }
 });
 
+router.post('/types/changeShowType', async (ctx) => {
+  try {
+    const typeId = parseInt(ctx.req.body.typeId, 10);
+    if (isNaN(typeId)) {
+      throw new Error('typeId is NaN');
+    }
+    const showType = parseInt(ctx.req.body.showType, 10);
+    if (isNaN(showType)) {
+      throw new Error('showType is NaN');
+    }
+    await PostTypesModel.changeShowType(typeId, showType);
+    ctx.body = {
+      success: true
+    }
+  } catch (error) {
+    ctx.body = {
+      success: false,
+      message: error
+    }
+  }
+});
+
 export default router;

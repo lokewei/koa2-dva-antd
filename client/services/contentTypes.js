@@ -27,3 +27,10 @@ export async function remove(id) {
     data: { id }
   })
 }
+
+export async function changeShowType(params) {
+  return await request('/api/post/types/changeShowType', {
+    method: 'post',
+    data: params
+  })
+}

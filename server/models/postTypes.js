@@ -61,5 +61,11 @@ export default {
     await db.query(`
       delete from tv_post_types where type_id = ?
     `, [id]);
+  },
+  changeShowType: async (id, showType) => {
+    if (!id) {
+      return null;
+    }
+    await db.query('update tv_post_types set show_type = ? where type_id = ?', [showType, id]);
   }
 }

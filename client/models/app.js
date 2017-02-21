@@ -17,7 +17,7 @@ export default {
     loginButtonLoading: false,
     menuPopoverVisible: false,
     siderFold: localStorage.getItem('antdAdminSiderFold') === 'true',
-    darkTheme: localStorage.getItem('antdAdminDarkTheme') === 'false',
+    darkTheme: localStorage.getItem('antdAdminDarkTheme') === 'true',
     isNavbar: document.body.clientWidth < 769,
     navOpenKeys: JSON.parse(localStorage.getItem('navOpenKeys') || '[]') // 侧边栏菜单打开的keys
   },
