@@ -124,8 +124,8 @@ class modal extends React.PureComponent {
   }
 
   handleOk() {
-    const { item, onOk, form: { validateFields, getFieldsValue } } = this.props;
-    validateFields((errors) => {
+    const { item, onOk, form: { validateFieldsAndScroll, getFieldsValue } } = this.props;
+    validateFieldsAndScroll((errors) => {
       if (errors) {
         return
       }

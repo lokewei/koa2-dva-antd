@@ -185,6 +185,7 @@ const ContentList = (props) => {
                 checkedChildren={<Icon type="check" />}
                 unCheckedChildren={<Icon type="cross" />}
                 checked={nowChecked}
+                disabled={[4, 5].includes(record.type_id)}
                 onChange={(checked) => { onChangeShowType(record.type_id, checked) }}
               />
             </Tooltip>
@@ -196,14 +197,20 @@ const ContentList = (props) => {
       title: '操作',
       key: 'operation',
       width: 100,
-      render: (text, record) => (
-        <p>
-          <a onClick={() => onEditItem(record)} style={{ marginRight: 4 }}>编辑</a>
-          <Popconfirm title="确定要删除吗？" onConfirm={() => onDeleteItem(record.type_id)}>
-            <a>删除</a>
-          </Popconfirm>
-        </p>
-      )
+      render: (text, record) => {
+        if ([4, 5].includes(record.type_id)) {
+          return '-';
+        } else {
+          return (
+            <p>
+              <a onClick={() => onEditItem(record)} style={{ marginRight: 4 }}>编辑</a>
+              <Popconfirm title="确定要删除吗？" onConfirm={() => onDeleteItem(record.type_id)}>
+                <a>删除</a>
+              </Popconfirm>
+            </p>
+          )
+        }
+      }
     }
   ];
   return (

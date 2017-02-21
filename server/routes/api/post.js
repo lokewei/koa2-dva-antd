@@ -84,12 +84,18 @@ router.post('/changeStatus', async (ctx) => {
   }
 });
 
-router.get('/getTops', async (ctx) => {
+router.get('/getHome', async (ctx) => {
   try {
-    const data = await PostModel.getTops();
+    const top = await PostModel.getHomeTop();
+    const middle = await PostModel.getHomeMiddle();
+    const bottom = await PostModel.getHomeBottom();
     ctx.body = {
       success: true,
-      data
+      data: {
+        top,
+        middle,
+        bottom
+      }
     }
   } catch (error) {
     ctx.body = {

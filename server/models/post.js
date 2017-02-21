@@ -48,9 +48,24 @@ export default {
     }
   },
   /**
-   * 查各组最新的一条组成头条轮播
+   * 查询头部轮播
    */
-  getTops: async() => {
+  getHomeTop: async() => {
+    return await db.query(`
+      select t2.ID as post_id, t2.post_title, t2.post_cover
+      from tv_post_types t1 left join tv_posts t2
+      on
+      t1.type_id = t2.post_type
+      where
+      t2.post_status = 'publish'
+      and
+      t1.type_id = 5
+    `);
+  },
+  /**
+   * 查各组最新的一条组成中部内容
+   */
+  getHomeMiddle: async() => {
     return await db.query(`
       select
         t.post_title,
@@ -59,10 +74,30 @@ export default {
         t.post_date,
         t.post_type,
         t1.name as type_name
-      from (select * from tv_posts where post_status='publish' order by post_date desc) t
+      from
+      (select * from tv_posts
+        where post_status='publish'
+        and post_type not in(4,5)
+        order by post_date desc
+      ) t
       left join tv_post_types t1
       on t.post_type = t1.type_id
       group by t.post_type
+    `);
+  },
+  /**
+   * 查询底部新闻
+   */
+  getHomeBottom: async() => {
+    return await db.query(`
+      select t2.ID as post_id, t2.post_title, t2.post_cover
+      from tv_post_types t1 left join tv_posts t2
+      on
+      t1.type_id = t2.post_type
+      where
+      t2.post_status = 'publish'
+      and
+      t1.type_id = 4
     `);
   },
   create: async (title, excerpt, type, content, cover, cls) => {
