@@ -21,9 +21,18 @@ body {
   border-radius: 2px;
 }
 
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0,0,0,.4);
+}
+
 ::-webkit-scrollbar {
   width: 2px;
   height: 2px;
+}
+
+:global .ant-table-body::-webkit-scrollbar:hover {
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {

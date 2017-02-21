@@ -2,14 +2,16 @@ import React, { PropTypes } from 'react'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import { Form, Row, Col,
-         Table, Popconfirm, Icon,
+         Table, Popconfirm, Icon, Tag,
          Input, Modal, Radio, Switch } from 'antd'
 import SearchGroup from '../components/ui/search';
+import moment from 'moment'
 import _isEmpty from 'lodash/isEmpty'
 
 const FormItem = Form.Item
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
+const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
 const Search = ({
   field,
@@ -52,9 +54,6 @@ class modal extends React.PureComponent {
     if (this.props.visible !== nextProps.visible && nextProps.visible === true) {
       if (_isEmpty(nextProps.item)) {
         this.props.form.resetFields();
-        this.props.form.setFieldsValue({
-          post_content: '<em>这里编写正文内容...</em>'
-        })
       } else {
         this.props.form.setFieldsValue(nextProps.item);
       }
@@ -87,7 +86,7 @@ class modal extends React.PureComponent {
       }
     } = this.props;
     const modalOpts = {
-      title: `${type === 'create' ? '新建文章' : '修改文章'}`,
+      title: `${type === 'create' ? '新建行程' : '修改行程'}`,
       visible,
       onOk: ::this.handleOk,
       onCancel,
@@ -98,10 +97,10 @@ class modal extends React.PureComponent {
 
     const formItemLayout = {
       labelCol: {
-        span: 2
+        span: 6
       },
       wrapperCol: {
-        span: 20,
+        span: 16,
         offset: 1
       }
     }
@@ -109,54 +108,70 @@ class modal extends React.PureComponent {
     return (
       <Modal {...modalOpts}>
         <Form>
-          <FormItem label="标 题：" hasFeedback {...formItemLayout}>
-            {getFieldDecorator('post_title', {
-              initialValue: item.post_title,
-              rules: [
-                {
-                  required: true,
-                  message: '标题未填写'
-                }
-              ]
-            })(<Input />)}
-          </FormItem>
-          <FormItem label="分 类：" hasFeedback {...formItemLayout}>
-            {getFieldDecorator('post_type', {
-              initialValue: item.post_type,
-              rules: [
-                {
-                  required: true,
-                  message: '分类未选择'
-                }
-              ]
-            })(
-              <RadioGroup>
-                {
-                  types.map((record) => {
-                    return (
-                      <RadioButton
-                        key={record.type_id}
-                        value={record.type_id}
-                      >
-                        {record.name}
-                      </RadioButton>
-                    );
-                  })
-                }
-              </RadioGroup>
-            )}
-          </FormItem>
-          <FormItem label="简 介：" hasFeedback {...formItemLayout}>
-            {getFieldDecorator('post_excerpt', {
-              initialValue: item.post_excerpt,
-              rules: [
-                {
-                  required: true,
-                  message: '简介未填写'
-                }
-              ]
-            })(<Input />)}
-          </FormItem>
+          <Row>
+            <Col span={10}>
+              <FormItem label="目的地：" hasFeedback {...formItemLayout}>
+                {getFieldDecorator('dest_name', {
+                  initialValue: item.dest_name
+                })(<Input disabled />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem label="客户名：" hasFeedback {...formItemLayout}>
+                {getFieldDecorator('name', {
+                  initialValue: item.dest_name
+                })(<Input disabled />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={10}>
+              <FormItem label="出行时间：" hasFeedback {...formItemLayout}>
+                {getFieldDecorator('travel_date', {
+                  initialValue: moment(item.travel_date).format(dateFormat)
+                })(<Input disabled />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem label="出行天数：" hasFeedback {...formItemLayout}>
+                {getFieldDecorator('travel_days', {
+                  initialValue: item.travel_days
+                })(<Input disabled />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={10}>
+              <FormItem label="成人数：" hasFeedback {...formItemLayout}>
+                {getFieldDecorator('adult_no', {
+                  initialValue: item.adult_no
+                })(<Input disabled />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem label="儿童数：" hasFeedback {...formItemLayout}>
+                {getFieldDecorator('children_no', {
+                  initialValue: item.children_no
+                })(<Input disabled />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={10}>
+              <FormItem label="手 机：" hasFeedback {...formItemLayout}>
+                {getFieldDecorator('phone_number', {
+                  initialValue: item.phone_number
+                })(<Input disabled />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem label="备 注：" hasFeedback {...formItemLayout}>
+                {getFieldDecorator('remarks', {
+                  initialValue: item.remarks
+                })(<Input disabled />)}
+              </FormItem>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     )
@@ -182,47 +197,73 @@ const ContentList = (props) => {
     pagination,
     onPageChange,
     onDeleteItem,
-    onEditItem,
-    onChangeStatus
+    onEditItem
   } = props;
   const columns = [
     {
       title: '目的地',
       dataIndex: 'dest_name',
-      key: 'dest_name'
+      key: 'dest_name',
+      render: (text = 'x') => {
+        return [
+          <Tag key="tag" color="blue-inverse">{text[0]}</Tag>,
+          <span key="text">{text}</span>
+        ]
+      }
+    }, {
+      title: '客户名',
+      dataIndex: 'name',
+      key: 'name'
+    }, {
+      title: '出行时间',
+      dataIndex: 'travel_date',
+      key: 'travel_date',
+      render: (text) => {
+        return moment(text).format(dateFormat);
+      }
+    }, {
+      title: '出行天数',
+      dataIndex: 'travel_days',
+      key: 'travel_days'
+    }, {
+      title: '成人数',
+      dataIndex: 'adult_no',
+      key: 'adult_no'
+    }, {
+      title: '儿童数',
+      dataIndex: 'children_no',
+      key: 'children_no'
+    }, {
+      title: '手机',
+      dataIndex: 'phone_number',
+      key: 'phone_number'
+    }, {
+      title: '备注',
+      dataIndex: 'remarks',
+      key: 'remarks'
     }, {
       title: '创建时间',
       dataIndex: 'create_date',
-      key: 'create_date'
+      key: 'create_date',
+      render: (text) => {
+        return moment(text).format(dateFormat);
+      }
     }, {
       title: '最后修改时间',
       dataIndex: 'last_modified',
-      key: 'last_modified'
-    }, {
-      title: '状态',
-      dataIndex: 'travel_status',
-      key: 'travel_status',
-      render: (text, record) => {
-        const checkedUI = (() => {
-          return (
-            <Switch
-              checkedChildren={<Icon type="check" />}
-              unCheckedChildren={<Icon type="cross" />}
-              checked={text === 'submit'}
-              onChange={(checked) => { onChangeStatus(record.ID, checked) }}
-            />
-          );
-        })();
-        return checkedUI;
+      key: 'last_modified',
+      render: (text) => {
+        return moment(text).format(dateFormat);
       }
     }, {
       title: '操作',
       key: 'operation',
       width: 100,
+      fixed: 'right',
       render: (text, record) => (
         <p>
           <a onClick={() => onEditItem(record)} style={{ marginRight: 4 }}>编辑</a>
-          <Popconfirm title="确定要删除吗？" onConfirm={() => onDeleteItem(record.ID)}>
+          <Popconfirm title="确定要删除旅行计划吗？！" onConfirm={() => onDeleteItem(record.ID)}>
             <a>删除</a>
           </Popconfirm>
         </p>
@@ -239,6 +280,7 @@ const ContentList = (props) => {
       pagination={pagination}
       simple
       rowKey={record => record.ID}
+      scroll={{ x: 1200 }}
     />
   );
 };
@@ -262,13 +304,13 @@ function Travel({ dispatch, travel, location }) {
     visible: modalVisible,
     onOk(data) {
       dispatch({
-        type: `contentManage/contents/${modalType}`,
+        type: `travel/${modalType}`,
         payload: data
       })
     },
     onCancel() {
       dispatch({
-        type: 'contentManage/contents/hideModal'
+        type: 'travel/hideModal'
       })
     }
   }
@@ -280,7 +322,7 @@ function Travel({ dispatch, travel, location }) {
     onPageChange(page) {
       const query = location.query;
       dispatch(routerRedux.push({
-        pathname: '/contentManage/contents',
+        pathname: '/travel',
         query: {
           ...query,
           page: page.current,
@@ -290,13 +332,13 @@ function Travel({ dispatch, travel, location }) {
     },
     onDeleteItem(id) {
       dispatch({
-        type: 'contentManage/contents/delete',
+        type: 'travel/delete',
         payload: id
       })
     },
     onEditItem(item) {
       dispatch({
-        type: 'contentManage/contents/showModal',
+        type: 'travel/showModal',
         payload: {
           modalType: 'update',
           currentItem: item
@@ -305,7 +347,7 @@ function Travel({ dispatch, travel, location }) {
     },
     onChangeStatus(id, checked) {
       dispatch({
-        type: 'contentManage/contents/changeStatus',
+        type: 'travel/changeStatus',
         payload: {
           id,
           status: checked ? 'publish' : 'draft'
@@ -320,14 +362,14 @@ function Travel({ dispatch, travel, location }) {
     onSearch(fieldsValue) {
       !!fieldsValue.keyword.length ?
       dispatch(routerRedux.push({
-        pathname: '/contentManage/contents',
+        pathname: '/travel',
         query: {
           field: fieldsValue.field,
           keyword: fieldsValue.keyword
         }
       })) :
       dispatch(routerRedux.push({
-        pathname: '/contentManage/contents'
+        pathname: '/travel'
       }));
     }
   }

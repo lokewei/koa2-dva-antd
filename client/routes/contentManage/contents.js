@@ -11,6 +11,7 @@ import RichEditor from '../../components/RichEditor'
 import ChooseImg from '../../components/chooseImg'
 import TagColors from '../../components/tagColors'
 import _isEmpty from 'lodash/isEmpty'
+import moment from 'moment'
 import Signal from 'signals'
 
 const FormItem = Form.Item;
@@ -317,11 +318,17 @@ const ContentList = (props) => {
     }, {
       title: '创建时间',
       dataIndex: 'post_date',
-      key: 'post_date'
+      key: 'post_date',
+      render: (text) => {
+        return moment(text).format('YYYY-MM-DD HH:mm:ss');
+      }
     }, {
       title: '最后修改时间',
       dataIndex: 'post_modified',
-      key: 'post_modified'
+      key: 'post_modified',
+      render: (text) => {
+        return moment(text).format('YYYY-MM-DD HH:mm:ss');
+      }
     }, {
       title: '发布',
       dataIndex: 'post_status',
