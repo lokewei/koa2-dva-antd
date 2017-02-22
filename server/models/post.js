@@ -90,7 +90,11 @@ export default {
    */
   getHomeBottom: async() => {
     return await db.query(`
-      select t2.ID as post_id, t2.post_title, t2.post_cover
+      select
+        t2.ID as post_id,
+        t2.post_title,
+        t2.post_cover,
+        DATE_FORMAT(t2.post_date,'%Y-%m-%d') as post_date
       from tv_post_types t1 left join tv_posts t2
       on
       t1.type_id = t2.post_type
