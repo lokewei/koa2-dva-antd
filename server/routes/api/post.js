@@ -27,6 +27,16 @@ router.get('/list', async (ctx) => {
   }
 });
 
+router.get('/get', async (ctx) => {
+  let id = parseInt(ctx.query.id, 10);
+  id = isNaN(id) ? null : id;
+  const data = await PostModel.getById(id);
+  ctx.body = {
+    success: !!data,
+    data: data[0]
+  }
+});
+
 router.post('/create', async (ctx) => {
   const { post_title, post_excerpt, post_type, post_content } = ctx.req.body;
   const cls = ctx.req.body.post_class || 'article';

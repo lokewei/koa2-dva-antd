@@ -47,6 +47,9 @@ export default {
       }
     }
   },
+  getById: async(id) => {
+    return await db.query('select * from tv_posts where ID = ?', [id]);
+  },
   /**
    * 查询头部轮播
    */
@@ -68,6 +71,7 @@ export default {
   getHomeMiddle: async() => {
     return await db.query(`
       select
+        t.ID as post_id,
         t.post_title,
         t.post_excerpt,
         t.post_cover,
