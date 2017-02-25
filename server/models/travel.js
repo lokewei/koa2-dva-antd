@@ -1,5 +1,6 @@
 import db from '../lib/db';
 import _ from 'lodash'
+import moment from 'moment'
 
 const buildConditions = (params = {}) => {
   const conditions = [];
@@ -49,23 +50,38 @@ export default {
     if (fromRecord.length < 0) {
       return null;
     }
+    const fields = ['dest', 'dest_name', 'travel_date', 'travel_days', 'adult_no'];
+    console.log(moment(travelDate, 'YYYY-MM-DD').toString());
+    const travDate = moment(travelDate, 'YYYY-MM-DD').toDate();
+    const values = [dest, fromRecord[0].post_title, travDate, travelDays, adultNo];
+    if (!_.isEmpty(childrenNo)) {
+      fields.push('children_no');
+      values.push(childrenNo);
+    }
+
+    fields.push('name');
+    values.push(name);
+
+    fields.push('phone_number');
+    values.push(phoneNumber)
+
+    if (!_.isEmpty(remarks)) {
+      fields.push('remarks');
+      values.push(remarks);
+    }
+    if (!_.isEmpty(status)) {
+      fields.push('travel_status');
+      values.push(status);
+    }
+    fields.push('create_date');
+    values.push(now);
+    const createFields = fields.length ? `${fields.join(' , ')}` : ''
+    const places = Array(fields.length).fill('?').join(',');
     await db.query(`
       insert into
-      tv_travel(
-        dest,
-        dest_name,
-        travel_date,
-        travel_days,
-        adult_no,
-        children_no,
-        name,
-        phone_number,
-        remarks,
-        travel_status,
-        create_date
-      )
-      values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    , [travelDate, fromRecord[0].post_title, travelDays, adultNo, childrenNo, name, phoneNumber, remarks, status, now]);
+      tv_travel(${createFields})
+      values(${places})`
+    , values);
   },
 
   update: async (id, params) => {

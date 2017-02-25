@@ -70,11 +70,6 @@ router.post('/create', async (ctx) => {
   }
 });
 
-router.post('/submit', async (ctx) => {
-  ctx.status = 302;
-  ctx.redirect('/m/index.html');
-});
-
 router.post('/update', async (ctx) => {
   const { post_title, post_excerpt, post_type, post_content, post_cover } = ctx.req.body;
   let id = parseInt(ctx.req.body.id, 10);

@@ -50,6 +50,42 @@ router.post('/create', async (ctx) => {
   }
 });
 
+router.post('/submit', async (ctx) => {
+  const {
+    destination,
+    appDate,
+    days,
+    adult,
+    child,
+    name,
+    phone,
+    comment
+  } = ctx.req.body;
+  let success = false;
+  try {
+    await TravelModel.create(
+      destination,
+      appDate,
+      days,
+      adult,
+      child,
+      name,
+      phone,
+      comment,
+      'draft'
+    );
+    success = true;
+  } catch (error) {
+    console.error(error);
+  }
+  ctx.status = 302;
+  if (process.env.NODE_ENV === 'production') {
+    ctx.redirect(`/submit_result.html?success=${success}`);
+  } else {
+    ctx.redirect(`/m/submit_result.html?success=${success}`);
+  }
+});
+
 router.post('/update', async (ctx) => {
   let id = parseInt(ctx.req.body.id, 10);
   id = isNaN(id) ? null : id;
