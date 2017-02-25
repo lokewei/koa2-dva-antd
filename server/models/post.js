@@ -47,6 +47,10 @@ export default {
       }
     }
   },
+  queryDests: async() => {
+    const data = await db.query('select * from tv_posts where post_class = \'destination\' and post_status = \'publish\'');
+    return data;
+  },
   getById: async(id) => {
     return await db.query('select * from tv_posts where ID = ?', [id]);
   },

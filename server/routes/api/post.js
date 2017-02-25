@@ -37,6 +37,14 @@ router.get('/get', async (ctx) => {
   }
 });
 
+router.get('/queryDests', async (ctx) => {
+  const data = await PostModel.queryDests();
+  ctx.body = {
+    success: !!data,
+    data
+  }
+});
+
 router.post('/create', async (ctx) => {
   const { post_title, post_excerpt, post_type, post_content } = ctx.req.body;
   const cls = ctx.req.body.post_class || 'article';
@@ -60,6 +68,11 @@ router.post('/create', async (ctx) => {
       success: false
     }
   }
+});
+
+router.post('/submit', async (ctx) => {
+  ctx.status = 302;
+  ctx.redirect('/m/index.html');
 });
 
 router.post('/update', async (ctx) => {
