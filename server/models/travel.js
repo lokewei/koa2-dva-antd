@@ -44,6 +44,10 @@ export default {
     }
   },
 
+  getById: async(id) => {
+    return await db.query('select * from tv_travel where ID = ?', [id]);
+  },
+
   create: async (dest, travelDate, travelDays, adultNo, childrenNo, name, phoneNumber, remarks, status) => {
     const now = new Date();
     const fromRecord = await db.query('select post_title from tv_posts where ID = ?', [dest]);
@@ -85,45 +89,45 @@ export default {
   },
 
   update: async (id, params) => {
-    const { dest, travelDate, travelDays, adultNo,
-      childrenNo, name, phoneNumber, remarks, status } = params;
+    const { dest, travel_date, travel_days, adult_no,
+      children_no, name, phone_number, remarks, travel_status } = params;
     const conditions = [];
     const values = [];
     if (!_.isEmpty(dest)) {
       conditions.push('dest = ?');
       values.push(dest);
     }
-    if (!_.isEmpty(travelDate)) {
+    if (!_.isEmpty(travel_date)) {
       conditions.push('travel_date = ?');
-      values.push(travelDate);
+      values.push(travel_date);
     }
-    if (!_.isEmpty(travelDays)) {
+    if (!_.isEmpty(travel_days)) {
       conditions.push('travel_days = ?');
-      values.push(travelDays);
+      values.push(travel_days);
     }
-    if (!_.isEmpty(adultNo)) {
+    if (!_.isEmpty(adult_no)) {
       conditions.push('adult_no = ?');
-      values.push(adultNo);
+      values.push(adult_no);
     }
-    if (!_.isEmpty(childrenNo)) {
+    if (!_.isEmpty(children_no)) {
       conditions.push('children_no = ?');
-      values.push(childrenNo);
+      values.push(children_no);
     }
     if (!_.isEmpty(name)) {
       conditions.push('name = ?');
       values.push(name);
     }
-    if (!_.isEmpty(phoneNumber)) {
+    if (!_.isEmpty(phone_number)) {
       conditions.push('phone_number = ?');
-      values.push(phoneNumber);
+      values.push(phone_number);
     }
     if (!_.isEmpty(remarks)) {
       conditions.push('remarks = ?');
       values.push(remarks);
     }
-    if (!_.isEmpty(status)) {
+    if (!_.isEmpty(travel_status)) {
       conditions.push('travel_status = ?');
-      values.push(status);
+      values.push(travel_status);
     }
     const updateFields = conditions.length ? `${conditions.join(' , ')}, ` : ''
     const now = new Date();

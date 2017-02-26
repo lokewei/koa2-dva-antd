@@ -2,15 +2,14 @@ import React, { PropTypes } from 'react'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import { Form, Row, Col,
-         Table, Popconfirm, Icon, Tag,
-         Input, Modal, Radio, Switch } from 'antd'
+         Table, Popconfirm, Tag,
+         Input, Modal, Select } from 'antd'
 import SearchGroup from '../components/ui/search';
 import moment from 'moment'
 import _isEmpty from 'lodash/isEmpty'
 
 const FormItem = Form.Item
-const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
+const Option = Select.Option;
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
 const Search = ({
@@ -169,6 +168,20 @@ class modal extends React.PureComponent {
                 {getFieldDecorator('remarks', {
                   initialValue: item.remarks
                 })(<Input disabled />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={10}>
+              <FormItem label="订单状态：" hasFeedback {...formItemLayout}>
+                {getFieldDecorator('travel_status', {
+                  initialValue: item.phone_number
+                })(<Select>
+                  <Option value="draft">待处理</Option>
+                  <Option value="consulting">咨询中</Option>
+                  <Option value="cancel">取消</Option>
+                  <Option value="complete">完成</Option>
+                </Select>)}
               </FormItem>
             </Col>
           </Row>

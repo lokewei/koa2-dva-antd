@@ -16,6 +16,17 @@ router.get('/list', async (ctx) => {
   }
 });
 
+router.get('/get', async (ctx) => {
+  let id = parseInt(ctx.query.id, 10);
+  id = isNaN(id) ? null : id;
+  const data = await TravelModel.getById(id);
+  ctx.body = {
+    success: !!data,
+    data: data[0]
+  }
+});
+
+
 router.post('/create', async (ctx) => {
   const {
     dest,
