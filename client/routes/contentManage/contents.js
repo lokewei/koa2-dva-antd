@@ -176,6 +176,10 @@ class modal extends React.PureComponent {
       }
     }
 
+    const handleChooseImgVisibleChange = (v) => {
+      console.log(v);
+    }
+
     return (
       <Modal {...modalOpts}>
         <Form>
@@ -247,7 +251,7 @@ class modal extends React.PureComponent {
           <FormItem label="封 面：" hasFeedback {...formItemLayout}>
             {getFieldDecorator('post_cover', {
               initialValue: item.post_cover
-            })(<ChooseImg />)}
+            })(<ChooseImg onVisibleChange={handleChooseImgVisibleChange} />)}
           </FormItem>
         </Form>
       </Modal>

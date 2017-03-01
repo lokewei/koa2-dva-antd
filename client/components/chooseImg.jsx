@@ -56,6 +56,8 @@ class ChooseImg extends React.PureComponent {
           onOk={::this.handleOk}
           onCancel={::this.handleCancel}
           width={864}
+          style={{top: 10}}
+          wrapClassName="super-top-right"
         />
       </div>
     )
