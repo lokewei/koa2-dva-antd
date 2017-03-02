@@ -119,6 +119,38 @@ router.post('/delImgItem', async (ctx) => {
       message: '参数:id，不存在或者非法'
     }
   }
-})
+});
+
+router.post('/changeFileName', async (ctx) => {
+  const { id, name } = ctx.req.body;
+  if (id) {
+    await ContentImgsModel.changeOriginName(id, name);
+    ctx.body = {
+      success: true,
+      message: 'ok'
+    }
+  } else {
+    ctx.body = {
+      success: false,
+      message: 'error'
+    }
+  }
+});
+
+router.post('/changeGroup', async (ctx) => {
+  const { ids, groupId } = ctx.req.body;
+  if (ids && groupId) {
+    await ContentImgsModel.changeGroup(ids, groupId);
+    ctx.body = {
+      success: true,
+      message: 'ok'
+    }
+  } else {
+    ctx.body = {
+      success: false,
+      message: 'error'
+    }
+  }
+});
 
 export default router;
