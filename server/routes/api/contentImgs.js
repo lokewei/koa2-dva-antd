@@ -137,6 +137,22 @@ router.post('/changeFileName', async (ctx) => {
   }
 });
 
+router.post('/createGroup', async (ctx) => {
+  const { name } = ctx.req.body;
+  try {
+    await ContentImgsModel.createGroup(name);
+    ctx.body = {
+      success: true,
+      message: 'ok'
+    }
+  } catch (error) {
+    ctx.body = {
+      success: false,
+      message: error
+    }
+  }
+});
+
 router.post('/changeGroup', async (ctx) => {
   const { ids, groupId } = ctx.req.body;
   if (ids && groupId) {
