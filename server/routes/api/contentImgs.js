@@ -121,6 +121,32 @@ router.post('/delImgItem', async (ctx) => {
   }
 });
 
+router.post('/delImgItems', async (ctx) => {
+  const { ids } = ctx.req.body;
+  if (ids) {
+    const idArr = ids.split(',');
+    idArr.forEach(async (id) => {
+      const [file] = await ContentImgsModel.getById(id);
+      if (file) {
+        const stablePath = path.join(rootPath, file.path);
+        if (stablePath !== rootPath && fs.existsSync(stablePath)) {
+          await fs.unlinkSync(stablePath);
+        }
+        await ContentImgsModel.delete(id);
+      }
+    })
+    ctx.body = {
+      success: true,
+      message: '删除成功'
+    }
+  } else {
+    ctx.body = {
+      success: false,
+      message: '参数:ids，不存在或者非法'
+    }
+  }
+});
+
 router.post('/changeFileName', async (ctx) => {
   const { id, name } = ctx.req.body;
   if (id) {

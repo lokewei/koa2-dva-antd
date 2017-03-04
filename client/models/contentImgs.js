@@ -113,6 +113,9 @@ export default {
           groupId: payload
         }
       }))
+    },
+    *createGroup({ payload }, { put }) {
+      // yield 
     }
   },
   reducers: {

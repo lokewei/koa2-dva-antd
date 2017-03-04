@@ -19,3 +19,26 @@ export async function delImgItem(id) {
     data: { id }
   })
 }
+
+export async function delImgItems(ids) {
+  return await request('/api/contentImgs/delImgItems', {
+    method: 'post',
+    data: { ids }
+  })
+}
+
+export async function createGroup(name) {
+  return await request('/api/contentImgs/createGroup', {
+    method: 'post',
+    data: { name }
+  })
+}
+
+export async function changeGroup(ids, groupId) {
+  return await request('/api/contentImgs/changeGroup', {
+    method: 'post',
+    data: { ids, groupId }
+  })
+}
+
+
