@@ -55,7 +55,7 @@ export default {
   createGroup: async (name) => {
     const sql = `
       insert into
-      tv_attach_group(name, cb_del)
+      tv_attach_group(group_name, cb_del)
       values(?, 1)
     `;
     return await db.query(sql, [name]);

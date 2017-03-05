@@ -1,4 +1,4 @@
-import { query, groupList, delImgItem } from '../services/contentImgs'
+import { query, groupList, delImgItem, delImgItems, changeGroup, createGroup } from '../services/contentImgs'
 import { routerRedux } from 'dva/router';
 import _ from 'lodash'
 
@@ -12,7 +12,9 @@ export default {
     imageDatas: [], // [{ID, type, file_name, file_origin_name, path}]
     groupDatas: [],
     allChecked: false, // 全选按钮
-    currentGroup: 0,
+    indeterminate: false, // 模糊选择
+    currentGroup: { ID: 0, group_name: '全部图片', cb_del: 0, count: 0 },
+    newGroupName: '',
     checkedImgs: {
       /*
       {ID: {
@@ -43,10 +45,6 @@ export default {
   effects: {
     *init({ payload }, { put, call }) {
       yield put({ type: 'showLoading' });
-      const currentGroup = parseInt(payload.groupId, 10);
-      if (!isNaN(currentGroup)) {
-        yield put({ type: 'switchGroupSuccess', payload: currentGroup });
-      }
       const { data: data } = yield call(query, payload);
       const { data: groupData } = yield call(groupList);
       if (data) {
@@ -60,6 +58,13 @@ export default {
           type: 'setGroupDatas',
           payload: groupData
         });
+        const currentGroupId = parseInt(payload.groupId, 10);
+        if (!isNaN(currentGroupId)) {
+          const currentGroup = _.find(groupData, (record) => record.ID === currentGroupId);
+          if (!_.isEmpty(currentGroup)) {
+            yield put({ type: 'switchGroupSuccess', payload: currentGroup });
+          }
+        }
       }
       yield put({ type: 'initSuccess' });
     },
@@ -114,8 +119,29 @@ export default {
         }
       }))
     },
-    *createGroup({ payload }, { put }) {
-      // yield 
+    *createGroup({ payload }, { put, call }) {
+      yield put({ type: 'showLoading' });
+      yield call(createGroup, payload);
+      const { data: groupData } = yield call(groupList);
+      if (groupData) {
+        yield put({
+          type: 'setGroupDatas',
+          payload: groupData
+        });
+        yield put({
+          type: 'changeNewGroupName',
+          payload: ''
+        })
+      }
+      yield put({ type: 'hideLoading' });
+    },
+    *delImgItems({ payload }, { put, call, select }) {
+      yield put({ type: 'showLoading' });
+      const checkedImgs = yield select((state) => state['contentManage/contentImgs'].checkedImgs);
+      _.forOwn(checkedImgs, (record, id) => {
+        console.log(record, id);
+      });
+      yield put({ type: 'hideLoading' });
     }
   },
   reducers: {
@@ -125,7 +151,8 @@ export default {
       })
       return {
         ...state,
-        allChecked: true
+        allChecked: true,
+        indeterminate: false
       }
     },
     allUnchecked(state) {
@@ -134,7 +161,8 @@ export default {
       })
       return {
         ...state,
-        allChecked: false
+        allChecked: false,
+        indeterminate: false
       }
     },
     showLoading(state) {
@@ -181,8 +209,23 @@ export default {
     },
     checkImgItem(state, { payload }) {
       state.checkedImgs[payload.ID].checked = payload.checked;
+      let checkedCount = 0;
+      _.forOwn(state.checkedImgs, (record) => {
+        if (record.checked === true) {
+          checkedCount++;
+        }
+      });
+
       return {
-        ...state
+        ...state,
+        allChecked: checkedCount === state.imageDatas.length,
+        indeterminate: !!checkedCount && (checkedCount < state.imageDatas.length)
+      }
+    },
+    changeNewGroupName(state, { payload }) {
+      return {
+        ...state,
+        newGroupName: payload
       }
     },
     switchGroupSuccess(state, { payload }) {

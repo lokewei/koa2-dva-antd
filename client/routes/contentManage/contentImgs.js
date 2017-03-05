@@ -133,13 +133,24 @@ ImgItem.propTypes = {
  * @param {[type]} props [description]
  */
 const GroupList = (props) => {
-  const { data = [], current, handleSwitch } = props;
+  const {
+    data = [],
+    current,
+    newGroupName,
+    onChangeNewGroupName,
+    handleSwitch,
+    handleCreateGroup
+  } = props;
   const getPopupContainer = () => document.getElementById('imgsContent') || document.body;
   const getPopContent = () => {
     return [
       <label key="label">创建分组</label>,
       <div key="input" style={{ width: 200 }}>
-        <Input size="large" />
+        <Input
+          size="large"
+          value={newGroupName}
+          onChange={(e) => { onChangeNewGroupName(e.target.value); }}
+        />
       </div>
     ];
   }
@@ -151,7 +162,7 @@ const GroupList = (props) => {
             data.map((record) => {
               const className = classnames({
                 [styles.inner_menu_item]: true,
-                [styles.selected]: current === record.ID
+                [styles.selected]: current.ID === record.ID
               });
               const handleClick = () => {
                 handleSwitch(record.ID);
@@ -172,6 +183,8 @@ const GroupList = (props) => {
         <PopConfirm
           content={getPopContent()}
           getPopupContainer={getPopupContainer}
+          onOk={() => { handleCreateGroup(newGroupName); }}
+          onCancel={() => { onChangeNewGroupName('') }}
         >
           <a className={styles.inner_menu_link}>
             <Icon type="plus" /> 新建分组
@@ -190,11 +203,13 @@ const GroupList = (props) => {
 function ContentImgs({ dispatch, contentImgs }) {
   const {
     allChecked,
+    indeterminate,
     imageDatas,
     checkedImgs,
     groupDatas,
     loading,
     currentGroup,
+    newGroupName,
     optMessage,
     messageShowing,
     messageType
@@ -203,7 +218,7 @@ function ContentImgs({ dispatch, contentImgs }) {
     name: 'file',
     action: './api/contentImgs/upload',
     accept: 'image/bmp,image/png,image/jpeg,image/jpg,image/gif',
-    data: { groupId: currentGroup > 0 ? currentGroup : null },
+    data: { groupId: currentGroup.ID > 0 ? currentGroup.ID : null },
     showUploadList: false,
     onChange(info) {
       if (info.file.status === 'uploading') {
@@ -245,6 +260,26 @@ function ContentImgs({ dispatch, contentImgs }) {
       payload: id
     })
   }
+  // 创建分组
+  const handleCreateGroup = (name) => {
+    dispatch({
+      type: 'contentManage/contentImgs/createGroup',
+      payload: name
+    })
+  }
+  // 修改新分组名
+  const onChangeNewGroupName = (name) => {
+    dispatch({
+      type: 'contentManage/contentImgs/changeNewGroupName',
+      payload: name
+    })
+  }
+  // 批量删除图片
+  const handleDelImgs = () => {
+    dispatch({
+      type: 'contentManage/contentImgs/delImgItems'
+    })
+  }
 
   const imgItemProps = {
     groupDatas,
@@ -274,7 +309,15 @@ function ContentImgs({ dispatch, contentImgs }) {
               <div className={styles.bd}>
                 <div className={styles.media_list}>
                   <div className={styles.media_title}>
-                    <p>全部图片</p>
+                    <p>
+                      <span>{currentGroup.group_name}</span>
+                      {
+                        currentGroup.ID > 0 ? [
+                          <a key="rename">重命名</a>,
+                          <a key="delete">删除</a>
+                        ] : false
+                      }
+                    </p>
                     <div className={styles.title_extra}>
                       <Upload {...uploadProps}>
                         <Button type="primary">
@@ -284,9 +327,9 @@ function ContentImgs({ dispatch, contentImgs }) {
                     </div>
                   </div>
                   <div className={styles.media_tools}>
-                    <Checkbox checked={allChecked} onChange={onCheckAll}>全选</Checkbox>
-                    <Button disabled={!allChecked}>移动分组</Button>
-                    <Button disabled={!allChecked}>删除</Button>
+                    <Checkbox checked={allChecked} indeterminate={indeterminate} onChange={onCheckAll}>全选</Checkbox>
+                    <Button disabled={!allChecked && !indeterminate}>移动分组</Button>
+                    <Button onClick={handleDelImgs} disabled={!allChecked && !indeterminate}>删除</Button>
                   </div>
                   <div className={styles.img_pick}>
                     <ul>
@@ -310,7 +353,14 @@ function ContentImgs({ dispatch, contentImgs }) {
             </div>
             <div className={styles.inner_side}>
               <div className={styles.bd}>
-                <GroupList data={groupDatas} current={currentGroup} handleSwitch={handleSwitch} />
+                <GroupList
+                  data={groupDatas}
+                  newGroupName={newGroupName}
+                  onChangeNewGroupName={onChangeNewGroupName}
+                  current={currentGroup}
+                  handleSwitch={handleSwitch}
+                  handleCreateGroup={handleCreateGroup}
+                />
               </div>
             </div>
           </div>
