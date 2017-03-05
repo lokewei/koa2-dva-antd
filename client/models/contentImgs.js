@@ -17,6 +17,7 @@ export default {
     indeterminate: false, // 模糊选择
     currentGroup: { ID: 0, group_name: '全部图片', cb_del: 0, count: 0 },
     newGroupName: '',
+    toNewGroupId: 0,
     checkedImgs: {
       /*
       {ID: {
@@ -104,11 +105,17 @@ export default {
             message: data.message
           }
         });
-      }
-      // 重新拉一次图片列表回来
-      const { data: imgData } = yield call(query, payload);
-      if (data) {
-        yield put({ type: 'setImageDatas', payload: imgData });
+        if (data.success) {
+          yield put({
+            type: 'reCalcGroupCount',
+            increase: -1,
+            imgIds: [payload]
+          });
+          yield put({
+            type: 'delImgItemSuccess',
+            ids: [payload]
+          });
+        }
       }
       yield put({ type: 'hideLoading' });
       yield put({ type: 'changeMessageShow', payload: { showing: false } });
@@ -143,15 +150,57 @@ export default {
       const ids = [];
       _.forOwn(checkedImgs, (record, id) => {
         if (record.checked === true) {
-          ids.push(id);
+          ids.push(parseInt(id, 10));
         }
       });
-      yield call(delImgItems, ids.join());
+      const res = yield call(delImgItems, ids.join());
+      if (res.success) {
+        yield put({
+          type: 'reCalcGroupCount',
+          increase: -1,
+          imgIds: ids
+        });
+        yield put({
+          type: 'delImgItemSuccess',
+          ids
+        });
+        yield put({
+          type: 'allUnchecked'
+        });
+      }
       yield put({ type: 'hideLoading' });
     },
-    *changeGroup({ ids, groupId }, { put, call }) {
+    *changeGroup({ imgId, groupId }, { put, call, select }) {
       yield put({ type: 'showLoading' });
-      yield call(changeGroup, ids, groupId);
+      const ids = [];
+      if (!imgId) {
+        const checkedImgs = yield select((state) => state['contentManage/contentImgs'].checkedImgs);
+        _.forOwn(checkedImgs, (record, id) => {
+          if (record.checked === true) {
+            ids.push(parseInt(id, 10));
+          }
+        });
+      } else {
+        ids.push(imgId);
+      }
+
+      const res = yield call(changeGroup, ids.join(), groupId === -1 ? 0 : groupId);
+      if (res.success) {
+        if (groupId !== 0) {
+          yield put({
+            type: 'reCalcGroupCount',
+            increase: -1,
+            imgIds: ids
+          });
+          yield put({
+            type: 'delImgItemSuccess',
+            ids
+          });
+          yield put({
+            type: 'allUnchecked'
+          });
+        }
+      }
       yield put({ type: 'hideLoading' });
     },
     *renameGroup({ id, name }, { put, call }) {
@@ -229,9 +278,11 @@ export default {
       });
       return { ...state, checkedImgs, imageDatas };
     },
-    delImgItemSuccess(state, action) {
-      const id = action.payload;
-      // state.imageDatas.for
+    delImgItemSuccess(state, { ids }) {
+      _.remove(state.imageDatas, (record) => {
+        return ids.includes(record.ID);
+      });
+      return state;
     },
     delGroupSuccess(state, { id }) {
       _.remove(state.groupDatas, (record) => {
@@ -278,6 +329,28 @@ export default {
         ...state,
         currentGroup: payload
       }
+    },
+    toChangeCurGroup(state, { id }) {
+      return {
+        ...state,
+        toNewGroupId: id
+      }
+    },
+    reCalcGroupCount(state, { increase, imgIds }) {
+      const imgRecords = state.imageDatas.filter((record) => {
+        return imgIds.includes(record.ID);
+      });
+      if (imgRecords && imgRecords.length > 0) {
+        imgRecords.forEach((record) => {
+          const groupRecord = state.groupDatas.find((group) => {
+            return group.ID === record.group_id;
+          })
+          if (groupRecord && groupRecord.count > 0) {
+            groupRecord.count = groupRecord.count + increase
+          }
+        });
+      }
+      return state;
     }
   }
 }

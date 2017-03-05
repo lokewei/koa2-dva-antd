@@ -1,17 +1,19 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'dva'
-import { Upload, Button, Input, Icon, Checkbox, Tooltip, Spin, message } from 'antd'
+import { Upload, Button, Input, Icon, Checkbox, Radio, Tooltip, Spin, message } from 'antd'
 import classnames from 'classnames'
 import styles from '../../components/commons.less'
 import Message from '../../components/message'
 import PopConfirm from '../../components/popconfirm'
+
+const RadioGroup = Radio.Group;
 
 /**
  * 图片下面的操作按钮组
  * @param {[type]} props [description]
  */
 const ImgOpts = (props) => {
-  const { groupDatas, handleDel } = props;
+  const { ID, groupDatas, handleDel, onChangeGroup, handleChangeGroup, toNewGroupId } = props;
   const realGroup = groupDatas.filter((record) => {
     return record.ID !== 0;
   })
@@ -27,13 +29,15 @@ const ImgOpts = (props) => {
       if (realGroup.length > 1) {
         return (
           <div className={styles.frm_control}>
+            <RadioGroup onChange={(e) => { onChangeGroup(e.target.value) }} value={toNewGroupId}>
             {
               realGroup.map((record, index) => {
                 return (
-                  <Checkbox key={index} style={{ width: '46%' }}>{record.group_name}</Checkbox>
+                  <Radio key={index} style={{ width: '46%' }} value={record.ID}>{record.group_name}</Radio>
                 )
               })
             }
+            </RadioGroup>
           </div>
         );
       } else {
@@ -67,6 +71,9 @@ const ImgOpts = (props) => {
           content={getPopContent(2)}
           getPopupContainer={getPopupContainer}
           overlayStyle={{ width: 252 }}
+          onOk={() => {
+            handleChangeGroup(ID)
+          }}
         >
           <span className={styles.msg_card_opr_item_inner}>
             <Tooltip title="移动分组">
@@ -200,7 +207,7 @@ const GroupList = (props) => {
  * *******主体内容*******
  * [ContentImgs description]
  */
-function ContentImgs({ dispatch, contentImgs }) {
+function ContentImgs({ dispatch, contentImgs, location }) {
   const {
     allChecked,
     indeterminate,
@@ -210,6 +217,7 @@ function ContentImgs({ dispatch, contentImgs }) {
     loading,
     currentGroup,
     newGroupName,
+    toNewGroupId,
     optMessage,
     messageShowing,
     messageType
@@ -235,7 +243,8 @@ function ContentImgs({ dispatch, contentImgs }) {
           type: 'contentManage/contentImgs/hideLoading'
         });
         dispatch({
-          type: 'contentManage/contentImgs/queryImgs'
+          type: 'contentManage/contentImgs/init',
+          payload: location.query
         })
       } else if (info.file.status === 'error') {
         message.error(`${info.file.name} 文件上传失败`);
@@ -295,9 +304,25 @@ function ContentImgs({ dispatch, contentImgs }) {
       type: 'contentManage/contentImgs/delImgItems'
     })
   }
+  // 要移动的分组
+  const onChangeGroup = (id) => {
+    dispatch({
+      type: 'contentManage/contentImgs/toChangeCurGroup',
+      id
+    })
+  }
+  // 移动图片分组
+  const handleChangeGroup = (imgId) => {
+    dispatch({
+      type: 'contentManage/contentImgs/changeGroup',
+      imgId,
+      groupId: toNewGroupId
+    })
+  }
 
   const imgItemProps = {
     groupDatas,
+    toNewGroupId,
     // 单选一个图片元素
     handleCheck(ID, checked) {
       dispatch({
@@ -311,10 +336,15 @@ function ContentImgs({ dispatch, contentImgs }) {
         type: 'contentManage/contentImgs/delImgItem',
         payload: ID
       });
-    }
+    },
+    onChangeGroup,
+    handleChangeGroup
   };
 
   const getPopupContainer = () => document.getElementById('imgsContent') || document.body;
+  const realGroup = groupDatas.filter((record) => {
+    return record.ID !== 0;
+  })
 
   return (
     <Spin spinning={loading}>
@@ -367,8 +397,32 @@ function ContentImgs({ dispatch, contentImgs }) {
                   </div>
                   <div className={styles.media_tools}>
                     <Checkbox checked={allChecked} indeterminate={indeterminate} onChange={onCheckAll}>全选</Checkbox>
-                    <Button disabled={!allChecked && !indeterminate}>移动分组</Button>
-                    <Button onClick={handleDelImgs} disabled={!allChecked && !indeterminate}>删除</Button>
+                    <PopConfirm
+                      content={
+                        <div className={styles.frm_control}>
+                          <RadioGroup onChange={(e) => { onChangeGroup(e.target.value) }} value={toNewGroupId}>
+                          {
+                            realGroup.map((record, index) => {
+                              return (
+                                <Radio key={index} style={{ width: '46%' }} value={record.ID}>{record.group_name}</Radio>
+                              )
+                            })
+                          }
+                          </RadioGroup>
+                        </div>
+                      }
+                      getPopupContainer={getPopupContainer}
+                      onOk={handleChangeGroup}
+                    >
+                      <Button disabled={!allChecked && !indeterminate}>移动分组</Button>
+                    </PopConfirm>
+                    <PopConfirm
+                      content="确定删除这些素材吗？"
+                      getPopupContainer={getPopupContainer}
+                      onOk={handleDelImgs}
+                    >
+                      <Button disabled={!allChecked && !indeterminate}>删除</Button>
+                    </PopConfirm>
                   </div>
                   <div className={styles.img_pick}>
                     <ul>

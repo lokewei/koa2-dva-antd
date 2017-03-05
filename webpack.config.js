@@ -56,5 +56,7 @@ module.exports = function (webpackConfig, env) {
   webpackConfig.output.chunkFilename = 'chunks/[name]_[chunkhash:8].js';
   webpackConfig.output.path = path.join(__dirname, 'server/public/client');
 
+  // webpackConfig.devtool = 'cheap-module-eval-source-map';
+
   return webpackConfig
 }

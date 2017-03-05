@@ -182,7 +182,7 @@ router.post('/createGroup', async (ctx) => {
 router.post('/changeGroup', async (ctx) => {
   const { ids, groupId } = ctx.req.body;
   if (ids && groupId) {
-    await ContentImgsModel.changeGroup(ids, groupId);
+    await ContentImgsModel.changeGroup(ids.split(','), groupId);
     ctx.body = {
       success: true,
       message: 'ok'
