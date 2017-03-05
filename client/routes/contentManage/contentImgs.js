@@ -260,6 +260,21 @@ function ContentImgs({ dispatch, contentImgs }) {
       payload: id
     })
   }
+  // 重命名图片分组
+  const handleRenameGroup = (id, name) => {
+    dispatch({
+      type: 'contentManage/contentImgs/renameGroup',
+      id,
+      name
+    });
+  }
+  // 删除图片分组
+  const handleDeleteGroup = (id) => {
+    dispatch({
+      type: 'contentManage/contentImgs/deleteGroup',
+      id
+    });
+  }
   // 创建分组
   const handleCreateGroup = (name) => {
     dispatch({
@@ -299,6 +314,8 @@ function ContentImgs({ dispatch, contentImgs }) {
     }
   };
 
+  const getPopupContainer = () => document.getElementById('imgsContent') || document.body;
+
   return (
     <Spin spinning={loading}>
       <Message type={messageType} message={optMessage} showing={messageShowing} />
@@ -312,9 +329,31 @@ function ContentImgs({ dispatch, contentImgs }) {
                     <p>
                       <span>{currentGroup.group_name}</span>
                       {
+                        // 重命名 & 删除 图片分组
                         currentGroup.ID > 0 ? [
-                          <a key="rename">重命名</a>,
-                          <a key="delete">删除</a>
+                          <PopConfirm
+                            key="rename"
+                            content={
+                              <Input
+                                value={newGroupName || currentGroup.group_name}
+                                onChange={(e) => { onChangeNewGroupName(e.target.value) }}
+                              />
+                            }
+                            placement="bottom"
+                            getPopupContainer={getPopupContainer}
+                            onOk={() => { handleRenameGroup(currentGroup.ID, newGroupName) }}
+                            onCancel={() => { onChangeNewGroupName('') }}
+                          >
+                            <a>重命名</a>
+                          </PopConfirm>,
+                          <PopConfirm
+                            key="delete"
+                            content="删除后的分组图片自动归于 未分组"
+                            getPopupContainer={getPopupContainer}
+                            onOk={() => { handleDeleteGroup(currentGroup.ID) }}
+                          >
+                            <a>删除</a>
+                          </PopConfirm>
                         ] : false
                       }
                     </p>

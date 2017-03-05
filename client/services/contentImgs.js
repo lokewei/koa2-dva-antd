@@ -41,4 +41,18 @@ export async function changeGroup(ids, groupId) {
   })
 }
 
+export async function renameGroup(id, name) {
+  return await request('/api/contentImgs/renameGroup', {
+    method: 'post',
+    data: { id, name }
+  })
+}
+
+export async function deleteGroup(id) {
+  return await request('/api/contentImgs/deleteGroup', {
+    method: 'post',
+    data: { id }
+  })
+}
+
 

@@ -158,7 +158,7 @@ router.post('/changeFileName', async (ctx) => {
   } else {
     ctx.body = {
       success: false,
-      message: 'error'
+      message: 'params error'
     }
   }
 });
@@ -190,7 +190,39 @@ router.post('/changeGroup', async (ctx) => {
   } else {
     ctx.body = {
       success: false,
-      message: 'error'
+      message: 'params error'
+    }
+  }
+});
+
+router.post('/renameGroup', async (ctx) => {
+  const { id, name } = ctx.req.body;
+  if (id && name) {
+    await ContentImgsModel.renameGroup(id, name);
+    ctx.body = {
+      success: true,
+      message: 'ok'
+    }
+  } else {
+    ctx.body = {
+      success: false,
+      message: 'params error'
+    }
+  }
+});
+
+router.post('/deleteGroup', async (ctx) => {
+  const { id } = ctx.req.body;
+  if (id) {
+    await ContentImgsModel.deleteGroup(id);
+    ctx.body = {
+      success: true,
+      message: 'ok'
+    }
+  } else {
+    ctx.body = {
+      success: false,
+      message: 'param error'
     }
   }
 });

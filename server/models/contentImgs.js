@@ -59,5 +59,16 @@ export default {
       values(?, 1)
     `;
     return await db.query(sql, [name]);
+  },
+  renameGroup: async (id, name) => {
+    const sql = `
+      update tv_attach_group set group_name = ? where group_id = ?
+    `;
+    return await db.query(sql, [name, id]);
+  },
+  deleteGroup: async (id) => {
+    // update all current group to zero(means ungrouped)
+    await db.query('update tv_attachs set group_id = 0 where group_id = ?', [id]);
+    return await db.query('delete from tv_attach_group where group_id = ?', [id]);
   }
 }

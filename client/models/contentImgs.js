@@ -1,4 +1,6 @@
-import { query, groupList, delImgItem, delImgItems, changeGroup, createGroup } from '../services/contentImgs'
+import { query, groupList, delImgItem,
+  delImgItems, changeGroup, createGroup,
+  renameGroup, deleteGroup } from '../services/contentImgs'
 import { routerRedux } from 'dva/router';
 import _ from 'lodash'
 
@@ -138,9 +140,37 @@ export default {
     *delImgItems({ payload }, { put, call, select }) {
       yield put({ type: 'showLoading' });
       const checkedImgs = yield select((state) => state['contentManage/contentImgs'].checkedImgs);
+      const ids = [];
       _.forOwn(checkedImgs, (record, id) => {
-        console.log(record, id);
+        if (record.checked === true) {
+          ids.push(id);
+        }
       });
+      yield call(delImgItems, ids.join());
+      yield put({ type: 'hideLoading' });
+    },
+    *changeGroup({ ids, groupId }, { put, call }) {
+      yield put({ type: 'showLoading' });
+      yield call(changeGroup, ids, groupId);
+      yield put({ type: 'hideLoading' });
+    },
+    *renameGroup({ id, name }, { put, call }) {
+      yield put({ type: 'showLoading' });
+      const res = yield call(renameGroup, id, name);
+      if (res.success) {
+        yield put({ type: 'renameGroupSuccess', id, name })
+      }
+      yield put({ type: 'hideLoading' });
+    },
+    *deleteGroup({ id }, { put, call }) {
+      yield put({ type: 'showLoading' });
+      const res = yield call(deleteGroup, id);
+      if (res.success) {
+        yield put({
+          type: 'delGroupSuccess',
+          id
+        })
+      }
       yield put({ type: 'hideLoading' });
     }
   },
@@ -202,6 +232,21 @@ export default {
     delImgItemSuccess(state, action) {
       const id = action.payload;
       // state.imageDatas.for
+    },
+    delGroupSuccess(state, { id }) {
+      _.remove(state.groupDatas, (record) => {
+        return record.ID === id
+      });
+      return state;
+    },
+    renameGroupSuccess(state, { id, name }) {
+      state.groupDatas.forEach((record) => {
+        if (record.ID === id) {
+          record.group_name = name;
+        }
+        return record;
+      });
+      return state;
     },
     setGroupDatas(state, action) {
       const groupDatas = action.payload;
