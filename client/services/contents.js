@@ -7,6 +7,12 @@ export async function query(params) {
   })
 }
 
+export async function queryDests() {
+  return await request('/api/post/queryDests', {
+    method: 'get'
+  })
+}
+
 export async function create(params) {
   return await request('/api/post/create', {
     method: 'post',

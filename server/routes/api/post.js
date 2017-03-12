@@ -27,6 +27,21 @@ router.get('/list', async (ctx) => {
   }
 });
 
+router.get('/queryDestPoints', async (ctx) => {
+  const { page = 1, pageSize = 10, className } = ctx.query;
+  let { destId } = ctx.query;
+  const pagination = {
+    page: parseInt(page, 10) || 1,
+    pageSize: parseInt(pageSize, 10) || 10
+  }
+  destId = isNaN(parseInt(destId, 10)) ? null : parseInt(destId, 10)
+  const data = await PostModel.queryDestPoints(destId, className, pagination);
+  ctx.body = {
+    success: !!data,
+    ...data
+  }
+});
+
 router.get('/get', async (ctx) => {
   let id = parseInt(ctx.query.id, 10);
   id = isNaN(id) ? null : id;
@@ -50,9 +65,11 @@ router.post('/create', async (ctx) => {
   const cls = ctx.req.body.post_class || 'article';
   let postCover = parseInt(ctx.req.body.post_cover, 10);
   postCover = isNaN(postCover) ? null : postCover;
+  let destId = parseInt(ctx.req.body.dest_id, 10);
+  destId = isNaN(destId) ? null : destId;
   try {
     if (postClasses.indexOf(cls) > -1) {
-      await PostModel.create(post_title, post_excerpt, post_type, post_content, postCover, cls);
+      await PostModel.create(post_title, post_excerpt, post_type, post_content, postCover, cls, destId);
       ctx.body = {
         success: true
       }

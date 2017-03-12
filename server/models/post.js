@@ -34,7 +34,16 @@ export default {
     const totalResult = await db.query(`select count(1) as total from tv_posts where ${conditions.where}`, conditions.values);
     const total = totalResult[0].total;
     const pageNum = Math.ceil(total / pageSize);
-    const data = await db.query(`select * from tv_posts where ${conditions.where} order by post_date desc LIMIT ${limit}`, conditions.values);
+    const data = await db.query(`
+    select * from tv_posts
+    left join (
+      select r.from_post_id as from_id, p.ID as dest_id, p.post_title as dest_name
+      from tv_posts as p right join tv_post_relationships as r
+      on p.ID = r.ref_post_id
+      where p.ID = ID
+    ) as pr
+    on ID = pr.from_id
+    where ${conditions.where} order by post_date desc LIMIT ${limit}`, conditions.values);
     if (page > pageNum) {
       return null;
     }
@@ -50,6 +59,57 @@ export default {
   queryDests: async() => {
     const data = await db.query('select * from tv_posts where post_class = \'destination\' and post_status = \'publish\'');
     return data;
+  },
+  queryDestPoints: async(destId, className, pagination) => {
+    let conditionWhere = ['post_status = \'publish\''];
+    const conditionValues = [];
+    if (destId) {
+      conditionWhere.push('dest_id = ?');
+      conditionValues.push(destId);
+    }
+    if (className) {
+      conditionWhere.push('post_class = ?');
+      conditionValues.push(className);
+    } else {
+      conditionWhere.push('post_class <> \'article\' and post_class <> \'destination\'');
+    }
+    conditionWhere = conditionWhere.length > 1 ? conditionWhere.join(' AND ') : conditionWhere[0];
+    const page = pagination.page;
+    const pageSize = pagination.pageSize;
+    const skip = (page - 1) * pageSize;
+    const limit = `${skip}, ${skip + pageSize}`;
+    const totalResult = await db.query(`select count(1) as total from tv_posts
+    left join (
+      select r.from_post_id as from_id, p.ID as dest_id, p.post_title as dest_name
+      from tv_posts as p right join tv_post_relationships as r
+      on p.ID = r.ref_post_id
+      where p.ID = ID
+    ) as pr
+    on ID = pr.from_id
+    where ${conditionWhere}`, conditionValues);
+    const total = totalResult[0].total;
+    const pageNum = Math.ceil(total / pageSize);
+    const data = await db.query(`
+    select * from tv_posts
+    left join (
+      select r.from_post_id as from_id, p.ID as dest_id, p.post_title as dest_name
+      from tv_posts as p right join tv_post_relationships as r
+      on p.ID = r.ref_post_id
+      where p.ID = ID
+    ) as pr
+    on ID = pr.from_id
+    where ${conditionWhere} order by post_date desc LIMIT ${limit}`, conditionValues);
+    if (page > pageNum) {
+      return null;
+    }
+    return {
+      data,
+      page: {
+        current: page,
+        pageSize,
+        total
+      }
+    }
   },
   getById: async(id) => {
     return await db.query('select * from tv_posts where ID = ?', [id]);
@@ -112,7 +172,7 @@ export default {
       t1.type_id = 4
     `);
   },
-  create: async (title, excerpt, type, content, cover, cls) => {
+  create: async (title, excerpt, type, content, cover, cls, destId) => {
     const now = new Date();
     const values = [title, excerpt, type, content]
     if (!!cover) {
@@ -121,11 +181,16 @@ export default {
     values.push(cls);
     values.push(now);
     values.push(now);
-    await db.query(`
-    insert into 
-    tv_posts(post_title, post_excerpt, post_type, post_content, ${!!cover ? 'post_cover, ' : ''} post_class, post_date, post_modified)
+    const rest = await db.query(`
+    insert into
+    tv_posts(post_title, post_excerpt, post_type, post_content,
+    ${!!cover ? 'post_cover, ' : ''} post_class, post_date, post_modified)
     values(?, ?, ?, ?, ${!!cover ? '?, ' : ''} ?, ?, ?)`
     , values);
+    const { insertId } = rest;
+    if (insertId && destId) {
+      await db.query('insert into tv_post_relationships values(?, ?, ?)', [insertId, destId, `${cls}-dest`]);
+    }
   },
   update: async (id, title, excerpt, type, content, cover) => {
     const conditions = [];

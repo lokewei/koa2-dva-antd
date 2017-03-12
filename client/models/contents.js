@@ -1,4 +1,4 @@
-import { query, create, update, remove, changeStatus } from '../services/contents'
+import { query, queryDests, create, update, remove, changeStatus } from '../services/contents'
 import { query as queryTypes } from '../services/contentTypes'
 import pathToRegexp from 'path-to-regexp'
 
@@ -7,6 +7,7 @@ export default {
   state: {
     list: [],
     types: [],
+    dests: [],
     loading: false,
     currentItem: {},
     modalVisible: false,
@@ -25,6 +26,10 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       history.listen(location => {
+        // 切换时保证弹出窗口隐藏
+        dispatch(({
+          type: 'hideModal'
+        }));
         const match = pathToRegexp('/dest/:moduleName').exec(location.pathname);
         if (match) {
           const moduleName = match[1];
@@ -36,6 +41,11 @@ export default {
             type: 'query',
             payload: location.query
           });
+          if (location.pathname !== '/dest/destination') {
+            dispatch({
+              type: 'queryDests'
+            });
+          }
         }
         if (location.pathname === '/contentManage/contents') {
           dispatch(({
@@ -75,6 +85,15 @@ export default {
       if (data) {
         yield put({
           type: 'setTypes',
+          payload: data.data
+        })
+      }
+    },
+    *queryDests({ payload }, { put, call }) {
+      const data = yield call(queryDests, payload);
+      if (data) {
+        yield put({
+          type: 'setDests',
           payload: data.data
         })
       }
@@ -186,6 +205,9 @@ export default {
     },
     setTypes(state, action) {
       return { ...state, types: action.payload };
+    },
+    setDests(state, action) {
+      return { ...state, dests: action.payload };
     },
     updateRecordField(state, action) {
       const { id, fieldName, fieldValue } = action.payload;

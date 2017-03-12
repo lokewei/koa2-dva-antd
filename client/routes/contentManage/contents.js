@@ -142,6 +142,7 @@ class modal extends React.PureComponent {
       visible,
       type,
       types,
+      dests,
       className,
       item = {},
       onCancel,
@@ -181,7 +182,7 @@ class modal extends React.PureComponent {
     }
 
     return (
-      <Modal {...modalOpts}>
+      <Modal key={`${className}-modal`} {...modalOpts}>
         <Form>
           <FormItem label={titleProps.title2} hasFeedback {...formItemLayout}>
             {getFieldDecorator('post_title', {
@@ -217,6 +218,38 @@ class modal extends React.PureComponent {
                           >
                             {record.name}
                           </RadioButton>
+                        );
+                      })
+                    }
+                  </RadioGroup>
+                )}
+              </FormItem>
+            :
+              <noscript></noscript>
+          }
+          {
+            className !== 'article' && className !== 'destination'
+            ?
+              <FormItem label="目的地：" hasFeedback {...formItemLayout}>
+                {getFieldDecorator('dest_id', {
+                  initialValue: item.dest_id,
+                  rules: [
+                    {
+                      required: true,
+                      message: '目的地未选择'
+                    }
+                  ]
+                })(
+                  <RadioGroup>
+                    {
+                      dests.map((record) => {
+                        return (
+                          <Radio
+                            key={record.ID}
+                            value={record.ID}
+                          >
+                            {record.post_title}
+                          </Radio>
                         );
                       })
                     }
@@ -282,7 +315,7 @@ const ContentList = (props) => {
     className
   } = props;
   const titleProps = classMap[className];
-  const columns = [
+  let columns = [
     {
       title: '封面',
       dataIndex: 'post_cover',
@@ -299,7 +332,10 @@ const ContentList = (props) => {
           return <span className={styles.pic} />
         }
       }
-    }, {
+    }
+  ];
+  if (className === 'article') {
+    columns.push({
       title: '分类',
       dataIndex: 'post_type',
       key: 'post_type',
@@ -315,7 +351,18 @@ const ContentList = (props) => {
           return typeId;
         }
       }
-    }, {
+    });
+  }
+
+  if (className !== 'destination' && className !== 'article') {
+    columns.push({
+      title: '所在地',
+      dataIndex: 'dest_name',
+      key: 'dest_name'
+    });
+  }
+  columns = columns.concat([
+    {
       title: titleProps.title,
       dataIndex: 'post_title',
       key: 'post_title'
@@ -363,7 +410,7 @@ const ContentList = (props) => {
         </p>
       )
     }
-  ];
+  ])
   return (
     <Table
       bordered
@@ -389,12 +436,13 @@ ContentList.propTypes = {
 
 function Contents({ dispatch, contents, location }) {
   const { loading, confirmLoading, list, pagination, currentItem,
-    modalVisible, modalType, types, className } = contents;
+    modalVisible, modalType, types, dests, className } = contents;
   const { field, keyword } = location.query || {};
   const modalProps = {
     item: modalType === 'create' ? {} : currentItem,
     type: modalType,
     types,
+    dests,
     visible: modalVisible,
     className,
     // confirmLoading,
