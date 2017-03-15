@@ -39,20 +39,20 @@ module.exports = [
         name: '景点'
       },
       {
-        key: 'restaurant',
-        name: '餐厅'
-      },
-      {
         key: 'hotel',
         name: '酒店'
       },
       {
+        key: 'restaurant',
+        name: '餐厅'
+      },
+      /*{
         key: 'shopping',
         name: '商城'
-      },
+      },*/
       {
         key: 'feature',
-        name: '特色服务'
+        name: '特定服务'
       },
       {
         key: 'other',
