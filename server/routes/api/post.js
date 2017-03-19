@@ -80,7 +80,6 @@ router.post('/create', async (ctx) => {
       }
     }
   } catch (error) {
-    console.log(error);
     ctx.body = {
       success: false
     }

@@ -132,6 +132,7 @@ export default {
       t2.post_status = 'publish'
       and
       t1.type_id = 5
+      order by t2.post_date desc
     `);
   },
   /**
@@ -156,6 +157,7 @@ export default {
       left join tv_post_types t1
       on t.post_type = t1.type_id
       group by t.post_type
+      order by t.post_date desc
     `);
   },
   /**
@@ -175,6 +177,8 @@ export default {
       t2.post_status = 'publish'
       and
       t1.type_id = 4
+      order by t2.post_date desc
+      limit 0,5
     `);
   },
   create: async (title, excerpt, type, content, cover, cls, destId) => {
