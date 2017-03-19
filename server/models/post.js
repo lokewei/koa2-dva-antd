@@ -16,6 +16,11 @@ const buildConditions = (params = {}) => {
     values.push(params.post_class);
   }
 
+  if (!_.isEmpty(params.post_type)) {
+    conditions.push('post_type = ?');
+    values.push(params.post_type);
+  }
+
   return {
     where: conditions.length ?
              conditions.join(' AND ') : '1=1',
