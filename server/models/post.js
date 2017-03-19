@@ -157,7 +157,6 @@ export default {
       left join tv_post_types t1
       on t.post_type = t1.type_id
       group by t.post_type
-      order by t.post_date desc
     `);
   },
   /**
