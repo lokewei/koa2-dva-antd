@@ -147,16 +147,18 @@ export default {
         t.post_cover,
         t.post_date,
         t.post_type,
-        t1.name as type_name
+        t3.name as type_name
       from
-      (select * from tv_posts
-        where post_status='publish'
-        and post_type not in(4,5)
-        order by post_date desc
+      (
+        select t0.* from tv_posts t0 right join (
+          select post_type, max(post_date) as post_date from tv_posts
+          where post_status='publish'
+          and post_type not in(4,5)
+          group by post_type
+        )as t1 on t0.post_type = t1.post_type and t0.post_date = t1.post_date
       ) t
-      left join tv_post_types t1
-      on t.post_type = t1.type_id
-      group by t.post_type
+      left join tv_post_types t3
+      on t.post_type = t3.type_id
     `);
   },
   /**
